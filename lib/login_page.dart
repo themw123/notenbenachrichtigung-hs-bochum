@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'logged_in_page.dart';
-
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -18,10 +17,10 @@ class _LoginPageState extends State<LoginPage> {
     final String username = _usernameController.text;
     final String password = _passwordController.text;
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('isLoggedIn', true);
-    prefs.setString('username', username);
-    prefs.setString('password', password);
+    final storage = new FlutterSecureStorage();
+    storage.write(key: 'isLoggedIn', value: "true");
+    storage.write(key: 'username', value: username);
+    storage.write(key: 'password', value: password);
 
     await Future.delayed(Duration(milliseconds: 500));
     // Weiterleitung zur LoggedInPage

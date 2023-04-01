@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'login_page.dart';
 import 'logged_in_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-  String username = prefs.getString('username') ?? '';
-  String password = prefs.getString('password') ?? '';
+
+  final storage = new FlutterSecureStorage();
+  String? value = await storage.read(key: 'isLoggedIn');
+  bool isLoggedIn = value?.toLowerCase() == 'true';
+
+  value = await storage.read(key: 'username');
+  String username = value != null ? value as String : '';
+
+  value = await storage.read(key: 'password');
+  String password = value != null ? value as String : '';
 
   runApp(MyApp(isLoggedIn: isLoggedIn, username: username, password: password));
 }
