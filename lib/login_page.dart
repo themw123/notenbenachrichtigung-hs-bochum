@@ -10,10 +10,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _submitForm() async{
+  void _submitForm() async {
     final String username = _usernameController.text;
     final String password = _passwordController.text;
 
@@ -26,7 +27,9 @@ class _LoginPageState extends State<LoginPage> {
     // Weiterleitung zur LoggedInPage
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => LoggedInPage(username: username, password: password)),
+      MaterialPageRoute(
+          builder: (context) =>
+              LoggedInPage(username: username, password: password)),
     );
   }
 
@@ -38,25 +41,41 @@ class _LoginPageState extends State<LoginPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            TextFormField(
-              decoration: const InputDecoration(labelText: 'Benutzername'),
-              controller: _usernameController,
-            ),
-            TextFormField(
-              decoration: const InputDecoration(labelText: 'Passwort'),
-              obscureText: true,
-              controller: _passwordController,
-            ),
-            ElevatedButton(
-              child: const Text('login'),
-              onPressed: _submitForm,
-            ),
-          ],
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Benutzername'),
+                controller: _usernameController,
+                validator: _validateInput,
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Passwort'),
+                obscureText: true,
+                controller: _passwordController,
+                validator: _validateInput,
+              ),
+              ElevatedButton(
+                child: const Text('login'),
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _submitForm();
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  String? _validateInput(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Dieses Feld darf nicht leer sein.';
+    }
+    return null;
   }
 }
