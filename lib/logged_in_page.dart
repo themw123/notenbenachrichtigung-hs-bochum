@@ -3,7 +3,8 @@ import 'package:notenbenachrichtigung/main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoggedInPage extends StatefulWidget {
-  const LoggedInPage({Key? key, required this.username, required this.password}) : super(key: key);
+  const LoggedInPage({Key? key, required this.username, required this.password})
+      : super(key: key);
   final String username;
   final String password;
 
@@ -15,6 +16,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('Logged in'),
       ),
@@ -26,18 +28,28 @@ class _LoggedInPageState extends State<LoggedInPage> {
             Text('Du bist eingeloggt!'),
             Text('Welcome ${widget.username}'),
             Text('Your password is ${widget.password}'),
-            ElevatedButton(
-              child: Text('Clear Data'),
-              onPressed: () async {
-                final storage = new FlutterSecureStorage();
-                await storage.deleteAll();
-                await Future.delayed(Duration(milliseconds: 500));
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (BuildContext context) => MyApp(isLoggedIn: false, username: "", password: "")),
-                      (route) => false,
-                );
-              },
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    child: Text('logout'),
+                    onPressed: () async {
+                      final storage = new FlutterSecureStorage();
+                      await storage.deleteAll();
+                      await Future.delayed(Duration(milliseconds: 300));
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => MyApp(
+                                isLoggedIn: false, username: "", password: "")),
+                        (route) => false,
+                      );
+                    },
+                  ),
+                ),
+              ),
             ),
           ],
         ),

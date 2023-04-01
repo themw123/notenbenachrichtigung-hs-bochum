@@ -23,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
     storage.write(key: 'username', value: username);
     storage.write(key: 'password', value: password);
 
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(Duration(milliseconds: 300));
     // Weiterleitung zur LoggedInPage
     Navigator.pushReplacement(
       context,
