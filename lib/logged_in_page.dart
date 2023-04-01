@@ -32,7 +32,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.clear();
                 await Future.delayed(Duration(milliseconds: 500));
-l                Navigator.pushAndRemoveUntil(
+                Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (BuildContext context) => MyApp(isLoggedIn: false, username: "", password: "")),
                       (route) => false,
