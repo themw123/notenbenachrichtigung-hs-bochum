@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:notenbenachrichtigung/main.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoggedInPage extends StatefulWidget {
   const LoggedInPage({Key? key, required this.username, required this.password}) : super(key: key);
@@ -29,8 +29,8 @@ class _LoggedInPageState extends State<LoggedInPage> {
             ElevatedButton(
               child: Text('Clear Data'),
               onPressed: () async {
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.clear();
+                final storage = new FlutterSecureStorage();
+                await storage.deleteAll();
                 await Future.delayed(Duration(milliseconds: 500));
                 Navigator.pushAndRemoveUntil(
                   context,
