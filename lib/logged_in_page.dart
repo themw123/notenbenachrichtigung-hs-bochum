@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:notenbenachrichtigung/main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'grade.dart';
+
 class LoggedInPage extends StatefulWidget {
   const LoggedInPage({Key? key, required this.username, required this.password})
       : super(key: key);
@@ -10,9 +12,18 @@ class LoggedInPage extends StatefulWidget {
 
   @override
   _LoggedInPageState createState() => _LoggedInPageState();
+
 }
 
 class _LoggedInPageState extends State<LoggedInPage> {
+
+  @override
+  void initState() {
+    //starte den background task
+    //Grade.startGrade();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:workmanager/workmanager.dart';
 
+import 'grade.dart';
 import 'login_page.dart';
 import 'logged_in_page.dart';
+import 'notification.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,6 +19,13 @@ void main() async {
 
   value = await storage.read(key: 'password');
   String password = value != null ? value as String : '';
+
+
+
+  //initialisiere den background task durch klasse Grade, muss vor runApp erfolgen
+  await Grade.initGrade();
+  Grade.startGrade();
+
 
   runApp(MyApp(isLoggedIn: isLoggedIn, username: username, password: password));
 }
