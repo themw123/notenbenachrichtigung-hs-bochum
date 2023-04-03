@@ -5,7 +5,6 @@ import 'package:workmanager/workmanager.dart';
 import 'grade.dart';
 import 'login_page.dart';
 import 'logged_in_page.dart';
-import 'notification.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,13 +20,12 @@ void main() async {
   String password = value != null ? value as String : '';
 
 
-
-  //initialisiere den background task durch klasse Grade, muss vor runApp erfolgen
-  await Grade.initGrade();
-  Grade.startGrade();
-
+  //initialisiere den background muss vor runApp erfolgen
+  await Workmanager().initialize(backgroundTask);
 
   runApp(MyApp(isLoggedIn: isLoggedIn, username: username, password: password));
+
+
 }
 
 class MyApp extends StatelessWidget {
@@ -58,6 +56,14 @@ class MyApp extends StatelessWidget {
       home: isLoggedIn ? LoggedInPage(username: username, password: password) : LoginPage(),
     );
   }
+}
+
+void backgroundTask() {
+  Workmanager().executeTask((taskName, inputData){
+    // Hier wird background task gemacht
+    Grade.getGrade();
+    return Future.value(true);
+  });
 }
 
 
