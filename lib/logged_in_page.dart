@@ -21,7 +21,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
 
 
   @override
-  Future<void> initState() async {
+  void initState() {
     //starte den background task
     Workmanager().registerPeriodicTask('checkGrade', 'checkGrade',
       frequency: Duration(minutes: 15),
