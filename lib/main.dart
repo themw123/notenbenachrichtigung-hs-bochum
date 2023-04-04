@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:workmanager/workmanager.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'database.dart';
 import 'grade.dart';
 import 'login_page.dart';
 import 'logged_in_page.dart';
@@ -23,11 +24,15 @@ void main() async {
   //berechtigugn einfordern, dass app nicht von bsp energiesparmodus beeinträchtigt wird
   requestBatteryOptimizations();
 
+
   //initialisiere den background muss vor runApp erfolgen
   await Workmanager().initialize(backgroundTask);
 
-  runApp(MyApp(isLoggedIn: isLoggedIn, username: username, password: password));
+  // Initialize the database before starting the background task
+  await DatabaseHelper.init();
 
+
+  runApp(MyApp(isLoggedIn: isLoggedIn, username: username, password: password));
 
 }
 
@@ -73,9 +78,7 @@ void backgroundTask() {
   Workmanager().executeTask((taskName, inputData){
     // Hier wird background task gemacht
     Grade.getGrade();
-
     //Hier der code wenn fertig, also ui änderung erfolgen soll
-
 
 
     return Future.value(true);
