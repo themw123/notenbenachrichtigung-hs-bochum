@@ -6,7 +6,8 @@ class Grade {
 
   static Future<void> getGrade() async {
 
-    //hier kein init, ist in der main bereits erfolgt
+    //muss hier erfolgen
+    await DatabaseHelper.init();
 
     print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     //query
@@ -23,15 +24,13 @@ class Grade {
     // row to insert
     Map<String, dynamic> row = {
       DatabaseHelper.columnSubject: 'testFach',
-      DatabaseHelper.test: 1
+      DatabaseHelper.test: test
     };
     await DatabaseHelper.insert(row);
 
-
-
     //noten holen und dann notification wenn nötig
     NotificationManager.init();
-    NotificationManager.showNotification("Test Notification", "This is a test notification, !!!! ${test} !!!!");
+    NotificationManager.showNotification("Test Notification", "This is a test notification, !!!!${test}!!!!");
   }
 
 
