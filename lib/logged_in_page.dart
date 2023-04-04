@@ -17,13 +17,18 @@ class LoggedInPage extends StatefulWidget {
 
 class _LoggedInPageState extends State<LoggedInPage> {
 
+  String _periodicTaskStatus = "";
+
+
   @override
-  void initState() {
+  Future<void> initState() async {
     //starte den background task
-    Workmanager().registerPeriodicTask('yyyy', 'yyyy',
+    Workmanager().registerPeriodicTask('checkGrade', 'checkGrade',
       frequency: Duration(minutes: 15),
       existingWorkPolicy: ExistingWorkPolicy.replace,
     );
+
+
     super.initState();
   }
 
@@ -52,6 +57,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
                     onPressed: () async {
                       final storage = new FlutterSecureStorage();
                       await storage.deleteAll();
+                      Workmanager().cancelByUniqueName("checkGrade");
                       await Future.delayed(Duration(milliseconds: 300));
                       Navigator.pushAndRemoveUntil(
                         context,
