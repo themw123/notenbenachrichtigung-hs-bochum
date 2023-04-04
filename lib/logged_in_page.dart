@@ -11,23 +11,29 @@ class LoggedInPage extends StatefulWidget {
 
   @override
   _LoggedInPageState createState() => _LoggedInPageState();
-
 }
 
 class _LoggedInPageState extends State<LoggedInPage> {
 
+  bool grade = false;
+
+
   @override
   void initState() {
-
-
     //starte den background task
     Workmanager().registerPeriodicTask('checkGrade', 'checkGrade',
       frequency: Duration(minutes: 15),
       existingWorkPolicy: ExistingWorkPolicy.replace
     );
-
-
     super.initState();
+  }
+
+  //ui grade wird aktualisiert.
+  //es fehl noch der aufruf der durch backgroundTask() erfolgen soll.
+  void updateGrade(bool newGrade) {
+    setState(() {
+      grade = newGrade;
+    });
   }
 
   @override
@@ -45,6 +51,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
             Text('Du bist eingeloggt!'),
             Text('Welcome ${widget.username}'),
             Text('Your password is ${widget.password}'),
+            Text("neue Note: $grade"),
             Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,

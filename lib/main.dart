@@ -73,6 +73,11 @@ void backgroundTask() {
   Workmanager().executeTask((taskName, inputData){
     // Hier wird background task gemacht
     Grade.getGrade();
+
+    //Hier der code wenn fertig, also ui änderung erfolgen soll
+
+
+
     return Future.value(true);
   });
 }
