@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:workmanager/workmanager.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'grade.dart';
 import 'login_page.dart';
@@ -19,6 +20,8 @@ void main() async {
   value = await storage.read(key: 'password');
   String password = value != null ? value as String : '';
 
+  //berechtigugn einfordern, dass app nicht von bsp energiesparmodus beeinträchtigt wird
+  requestBatteryOptimizations();
 
   //initialisiere den background muss vor runApp erfolgen
   await Workmanager().initialize(backgroundTask);
@@ -58,6 +61,14 @@ class MyApp extends StatelessWidget {
   }
 }
 
+void requestBatteryOptimizations() async {
+  if (await Permission.ignoreBatteryOptimizations.request().isGranted) {
+    // Die Berechtigung wurde gewährt, die App kann im Hintergrund ausgeführt werden
+  } else {
+    // Die Berechtigung wurde nicht gewährt, die App kann möglicherweise nicht im Hintergrund ausgeführt werden
+  }
+}
+
 void backgroundTask() {
   Workmanager().executeTask((taskName, inputData){
     // Hier wird background task gemacht
@@ -65,6 +76,7 @@ void backgroundTask() {
     return Future.value(true);
   });
 }
+
 
 
 

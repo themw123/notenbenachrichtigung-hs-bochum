@@ -3,7 +3,6 @@ import 'package:notenbenachrichtigung/main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:workmanager/workmanager.dart';
 
-
 class LoggedInPage extends StatefulWidget {
   const LoggedInPage({Key? key, required this.username, required this.password})
       : super(key: key);
@@ -17,15 +16,14 @@ class LoggedInPage extends StatefulWidget {
 
 class _LoggedInPageState extends State<LoggedInPage> {
 
-  String _periodicTaskStatus = "";
-
-
   @override
   void initState() {
+
+
     //starte den background task
     Workmanager().registerPeriodicTask('checkGrade', 'checkGrade',
       frequency: Duration(minutes: 15),
-      existingWorkPolicy: ExistingWorkPolicy.replace,
+      existingWorkPolicy: ExistingWorkPolicy.replace
     );
 
 
