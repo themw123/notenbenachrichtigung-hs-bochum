@@ -45,38 +45,79 @@ class DatabaseHelper {
           ''');
   }
 
+
+  static Stream<List<List<dynamic>>> getSubjectsStream() async* {
+
+    /*
+    yield* await db
+        .query(DatabaseHelper.table)
+        .then((rows) => rows.map((row) => [row[DatabaseHelper.columnId], row[DatabaseHelper.columnSubject]]).toList())
+        .asStream();
+
+     */
+    final db = await instance.database;
+    final allRows = await db.query(table);
+    final subjects = allRows.map((row) => [row[DatabaseHelper.columnId], row[DatabaseHelper.columnSubject]]).toList();
+    yield subjects;
+  }
+
+
+  static Future<void> setSubjects() async {
+    // row to insert
+    Map<String, dynamic> row1 = {
+      DatabaseHelper.columnSubject: 'testFach1',
+    };
+    Map<String, dynamic> row2 = {
+      DatabaseHelper.columnSubject: 'testFach2',
+    };
+    final db = await instance.database;
+    await db.insert(table, row1);
+    await db.insert(table, row2);
+  }
+
+  static Future<void> removeSubject() async {
+
+  }
+
+
+
   // Helper methods
 
   //delete all rows
   static Future<int> deleteAllRows() async {
-    return await _db.delete('noten');
+    final db = await instance.database;
+    return await db.delete('noten');
   }
 
   // Inserts at row in the database where each key in he Map is a column name
   // and the value is the column value. The return value is the id of the
   // inserted row.
   static Future<int> insert(Map<String, dynamic> row) async {
-    return await _db.insert(table, row);
+    final db = await instance.database;
+    return await db.insert(table, row);
   }
 
   // All of the rows are returned as a list of maps, where each map is
   // a key-value list of columns.
   static Future<List<Map<String, dynamic>>> queryAllRows() async {
+    final db = await instance.database;
     return await _db.query(table);
   }
 
   // All of the methods (insert, query, update, delete) can also be done using
   // raw SQL commands. This method uses a raw query to give the row count.
   static Future<int> queryRowCount() async {
-    final results = await _db.rawQuery('SELECT COUNT(*) FROM $table');
+    final db = await instance.database;
+    final results = await db.rawQuery('SELECT COUNT(*) FROM $table');
     return Sqflite.firstIntValue(results) ?? 0;
   }
 
   // We are assuming here that the id column in the map is set. The other
   // column values will be used to update the row.
   static Future<int> update(Map<String, dynamic> row) async {
+    final db = await instance.database;
     int id = row[columnId];
-    return await _db.update(
+    return await db.update(
       table,
       row,
       where: '$columnId = ?',
@@ -87,7 +128,8 @@ class DatabaseHelper {
   // Deletes the row specified by the id. The number of affected rows is
   // returned. This should be 1 as long as the row exists.
   static Future<int> delete(int id) async {
-    return await _db.delete(
+    final db = await instance.database;
+    return await db.delete(
       table,
       where: '$columnId = ?',
       whereArgs: [id],

@@ -14,22 +14,6 @@ class Subject {
 
 
 
-  static Stream<List<List<dynamic>>> getSubjectsStream() async* {
-    final DatabaseHelper databaseHelper = DatabaseHelper.instance;
-    final Database db = await databaseHelper.database;
-
-    /*
-    yield* await db
-        .query(DatabaseHelper.table)
-        .then((rows) => rows.map((row) => [row[DatabaseHelper.columnId], row[DatabaseHelper.columnSubject]]).toList())
-        .asStream();
-
-     */
-    final allRows = await db.query(DatabaseHelper.table);
-    final subjects = allRows.map((row) => [row[DatabaseHelper.columnId], row[DatabaseHelper.columnSubject]]).toList();
-    yield subjects;
-  }
-
   /*
   static Future<List<List>> getSubjectsDB() async {
 
@@ -49,21 +33,5 @@ class Subject {
   }
   */
 
-
-  static Future<void> setSubjects() async {
-    // row to insert
-    Map<String, dynamic> row1 = {
-      DatabaseHelper.columnSubject: 'testFach1',
-    };
-    Map<String, dynamic> row2 = {
-      DatabaseHelper.columnSubject: 'testFach2',
-    };
-    await DatabaseHelper.insert(row1);
-    await DatabaseHelper.insert(row2);
-  }
-
-  static Future<void> removeSubject() async {
-
-  }
 
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:notenbenachrichtigung/database.dart';
 import 'package:notenbenachrichtigung/main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:notenbenachrichtigung/subject.dart';
 import 'package:workmanager/workmanager.dart';
 
 class LoggedInPage extends StatefulWidget {
@@ -57,7 +57,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
               child:
 
               StreamBuilder<List<List<dynamic>>>(
-                stream: Subject.getSubjectsStream(),
+                stream: DatabaseHelper.getSubjectsStream(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return CircularProgressIndicator();
