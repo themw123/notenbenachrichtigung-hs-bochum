@@ -1,7 +1,11 @@
+import 'dart:isolate';
+
 import 'package:flutter/material.dart';
 import 'package:notenbenachrichtigung/main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:notenbenachrichtigung/subject.dart';
 import 'package:workmanager/workmanager.dart';
+import 'subject.dart';
 
 class LoggedInPage extends StatefulWidget {
   const LoggedInPage({Key? key, required this.username, required this.password})
@@ -14,27 +18,28 @@ class LoggedInPage extends StatefulWidget {
 }
 
 class _LoggedInPageState extends State<LoggedInPage> {
-
-  bool grade = false;
-
+  List<List<dynamic>> subjects = [];
 
   @override
   void initState() {
     //starte den background task
     Workmanager().registerPeriodicTask('checkGrade', 'checkGrade',
-      frequency: Duration(minutes: 15),
-      existingWorkPolicy: ExistingWorkPolicy.replace
-    );
+        frequency: Duration(minutes: 15),
+        existingWorkPolicy: ExistingWorkPolicy.replace);
     super.initState();
+
+    //updateSubjects();
   }
 
-  //ui grade wird aktualisiert.
-  //es fehl noch der aufruf der durch backgroundTask() erfolgen soll.
-  void updateGrade(bool newGrade) {
-    setState(() {
-      grade = newGrade;
+  /*
+  Future<void> updateSubjects() async {
+    List<List<dynamic>> temp = await Subject.getSubjectsDB() as List<List>;
+    setState(() async {
+      subjects = temp;
     });
   }
+  */
+
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +56,31 @@ class _LoggedInPageState extends State<LoggedInPage> {
             Text('Du bist eingeloggt!'),
             Text('Welcome ${widget.username}'),
             Text('Your password is ${widget.password}'),
-            Text("neue Note: $grade"),
+            Expanded(
+              child:
+
+              StreamBuilder<List<List<dynamic>>>(
+                stream: Subject.getSubjectsStream(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return CircularProgressIndicator();
+                  }
+                  final subjects = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: subjects.length,
+                    itemBuilder: (context, index) {
+                      final id = subjects[index][0];
+                      final subject = subjects[index][1];
+                      final id_subject = id + ":" + subject;
+                      return ListTile(
+                        title: Text(id_subject),
+                      );
+                    },
+                  );
+                },
+              ),
+
+            ),
             Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,
@@ -82,3 +111,4 @@ class _LoggedInPageState extends State<LoggedInPage> {
     );
   }
 }
+

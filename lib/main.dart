@@ -4,7 +4,7 @@ import 'package:workmanager/workmanager.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'database.dart';
-import 'grade.dart';
+import 'subject.dart';
 import 'login_page.dart';
 import 'logged_in_page.dart';
 
@@ -72,8 +72,10 @@ void requestBatteryOptimizations() async {
 void backgroundTask() {
   Workmanager().executeTask((taskName, inputData) async {
 
-    // Hier wird background task gemacht
-    await Grade.getGrade();
+    //muss hier erfolgen
+    await DatabaseHelper.init();
+
+    //await Subject.getSubjectsHS();
     //Hier der code wenn fertig, also ui änderung erfolgen soll
 
     return Future.value(true);

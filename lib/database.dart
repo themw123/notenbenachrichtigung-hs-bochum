@@ -9,9 +9,15 @@ class DatabaseHelper {
 
   static const columnId = 'id';
   static const columnSubject = 'fach';
-  static const test = 'test';
 
   static late Database _db;
+
+
+  static Future<Database> getDatabaseobject() async {
+    return await DatabaseHelper._db;
+  }
+
+
 
   // this opens the database (and creates it if it doesn't exist)
   static Future<void> init() async {
@@ -30,8 +36,7 @@ class DatabaseHelper {
     await db.execute('''
           CREATE TABLE $table (
             $columnId INTEGER PRIMARY KEY,
-            $columnSubject TEXT NOT NULL,
-            $test INTEGER NOT NULL
+            $columnSubject TEXT NOT NULL
           )
           ''');
   }
