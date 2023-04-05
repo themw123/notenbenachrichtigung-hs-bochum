@@ -1,3 +1,5 @@
+import 'package:sqflite/sqflite.dart';
+
 import 'notification.dart';
 import 'database.dart';
 
@@ -5,9 +7,6 @@ class Subject {
 
 
   static Future<void> getSubjectsHS() async {
-
-
-
     //noten holen und dann notification wenn nötig
     NotificationManager.init();
     NotificationManager.showNotification("Test Notification", "This is a test notification, !!!!!!!!");
@@ -16,11 +15,19 @@ class Subject {
 
 
   static Stream<List<List<dynamic>>> getSubjectsStream() async* {
-    final db = await DatabaseHelper.getDatabaseobject();
+    final DatabaseHelper databaseHelper = DatabaseHelper.instance;
+    final Database db = await databaseHelper.database;
+
+    /*
     yield* await db
         .query(DatabaseHelper.table)
         .then((rows) => rows.map((row) => [row[DatabaseHelper.columnId], row[DatabaseHelper.columnSubject]]).toList())
         .asStream();
+
+     */
+    final allRows = await db.query(DatabaseHelper.table);
+    final subjects = allRows.map((row) => [row[DatabaseHelper.columnId], row[DatabaseHelper.columnSubject]]).toList();
+    yield subjects;
   }
 
   /*

@@ -1,11 +1,8 @@
-import 'dart:isolate';
-
 import 'package:flutter/material.dart';
 import 'package:notenbenachrichtigung/main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:notenbenachrichtigung/subject.dart';
 import 'package:workmanager/workmanager.dart';
-import 'subject.dart';
 
 class LoggedInPage extends StatefulWidget {
   const LoggedInPage({Key? key, required this.username, required this.password})
@@ -18,7 +15,7 @@ class LoggedInPage extends StatefulWidget {
 }
 
 class _LoggedInPageState extends State<LoggedInPage> {
-  List<List<dynamic>> subjects = [];
+  //List<List<dynamic>> subjects = [];
 
   @override
   void initState() {

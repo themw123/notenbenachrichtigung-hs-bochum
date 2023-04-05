@@ -10,17 +10,21 @@ class DatabaseHelper {
   static const columnId = 'id';
   static const columnSubject = 'fach';
 
+
+  // make this a singleton class
+  DatabaseHelper._privateConstructor();
+  static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
   static late Database _db;
 
-
-  static Future<Database> getDatabaseobject() async {
-    return await DatabaseHelper._db;
+  // only have a single app-wide reference to the database
+  Future<Database> get database async {
+    if (_db != null) return _db;
+    _db = await init();
+    return _db!;
   }
 
-
-
   // this opens the database (and creates it if it doesn't exist)
-  static Future<void> init() async {
+  init() async {
     var databasesPath = await getDatabasesPath();
     final path = join(databasesPath, _databaseName);
     _db = await openDatabase(
