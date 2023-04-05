@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:notenbenachrichtigung/database.dart';
+import 'package:notenbenachrichtigung/request.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:workmanager/workmanager.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'subject.dart';
 import 'login_page.dart';
 import 'logged_in_page.dart';
 
@@ -77,8 +77,7 @@ void backgroundTask() {
     final DatabaseHelper databaseHelper = DatabaseHelper.instance;
     final Database db = await databaseHelper.database;
 
-    //await Subject.getSubjectsHS();
-    //Hier der code wenn fertig, also ui änderung erfolgen soll
+    await Request.getSubjectsHS();
 
     return Future.value(true);
   });
