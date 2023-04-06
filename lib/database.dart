@@ -43,6 +43,14 @@ class DatabaseHelper {
           ''');
   }
 
+  static Stream<List<List<dynamic>>> getSubjectsStream() async* {
+
+    Database? db = await instance.database;
+    yield* getSubjects().asStream();
+
+
+  }
+
 
   static Future<List<List>> getSubjects() async {
     final db = await instance.database;

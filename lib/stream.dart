@@ -4,12 +4,12 @@ import 'package:notenbenachrichtigung/database.dart';
 import 'package:sqflite/sqflite.dart';
 
 class StreamControllerHelper {
-  static StreamController<List<List<dynamic>>> _dataStreamController = StreamController<List<List<dynamic>>>();
+  static final StreamController<List<List<dynamic>>> _dataStreamController = StreamController<List<List<dynamic>>>();
 
   // Methode, um Daten zu fetchen und sie über den StreamController an die Flutter-Anwendung zu senden
   static void setSubjects() async {
     // Daten an den StreamController senden
-    _dataStreamController.sink.add(await DatabaseHelper.getSubjects());
+    _dataStreamController.add(await DatabaseHelper.getSubjects());
   }
 
   static StreamController<List<List>> get controller => _dataStreamController;
