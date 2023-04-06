@@ -43,18 +43,17 @@ class DatabaseHelper {
 
 
   static Stream<List<List<dynamic>>> getSubjectsStream() async* {
+    while (true) {
+      // Warten Sie 1 Sekunde, bevor Sie die Datenbankabfrage erneut ausführen
+      Database? db = await instance.database;
+      yield* db!.query(DatabaseHelper.table)
+          .then((rows) => rows.map((row) => [row[DatabaseHelper.columnId], row[DatabaseHelper.columnSubject]]).toList())
+          .asStream();
 
-    /*
-    yield* await db
-        .query(DatabaseHelper.table)
-        .then((rows) => rows.map((row) => [row[DatabaseHelper.columnId], row[DatabaseHelper.columnSubject]]).toList())
-        .asStream();
+      await Future.delayed(Duration(seconds: 5));
 
-     */
-    Database? db = await instance.database;
-    final allRows = await db!.query(table);
-    final subjects = allRows.map((row) => [row[DatabaseHelper.columnId], row[DatabaseHelper.columnSubject]]).toList();
-    yield subjects;
+    }
+
   }
 
 
@@ -62,17 +61,20 @@ class DatabaseHelper {
     Database? db = await instance.database;
     // row to insert
     Map<String, dynamic> row1 = {
-      DatabaseHelper.columnSubject: 'testFach1',
+      DatabaseHelper.columnSubject: 'testFach',
     };
+    /*
     Map<String, dynamic> row2 = {
       DatabaseHelper.columnSubject: 'testFach2',
     };
+    */
     await db!.insert(table, row1);
-    await db!.insert(table, row2);
+    //await db!.insert(table, row2);
   }
 
-  static Future<void> removeSubject() async {
-
+  static Future<void> removeAllSubjects() async {
+    Database? db = await instance.database;
+    await db!.delete(DatabaseHelper.table);
   }
 
 

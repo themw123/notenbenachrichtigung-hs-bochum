@@ -24,8 +24,7 @@ void main() async {
   //berechtigugn einfordern, dass app nicht von bsp energiesparmodus beeinträchtigt wird
   requestBatteryOptimizations();
 
-  //datenban initialisieren
-  await DatabaseHelper.instance.database;
+  DatabaseHelper.removeAllSubjects();
 
   //initialisiere den background muss vor runApp erfolgen
   await Workmanager().initialize(backgroundTask);

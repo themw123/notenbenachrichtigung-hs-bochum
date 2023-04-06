@@ -15,7 +15,6 @@ class LoggedInPage extends StatefulWidget {
 }
 
 class _LoggedInPageState extends State<LoggedInPage> {
-  //List<List<dynamic>> subjects = [];
 
   @override
   void initState() {
@@ -26,17 +25,14 @@ class _LoggedInPageState extends State<LoggedInPage> {
 
     super.initState();
 
-    //updateSubjects();
-  }
-
-  /*
-  Future<void> updateSubjects() async {
-    List<List<dynamic>> temp = await Subject.getSubjectsDB() as List<List>;
-    setState(() async {
-      subjects = temp;
+    Future.delayed(Duration(seconds: 10), () {
+        DatabaseHelper.setSubjects();
     });
+
+
+
+
   }
-  */
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +64,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
                     itemBuilder: (context, index) {
                       final id = subjects[index][0];
                       final subject = subjects[index][1];
-                      final id_subject = id + ":" + subject;
+                      final id_subject = id.toString() + ":" + subject;
                       return ListTile(
                         title: Text(id_subject),
                       );
