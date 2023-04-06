@@ -10,6 +10,8 @@ class DatabaseHelper {
   static const columnId = 'id';
   static const columnSubject = 'fach';
 
+  static List<List<dynamic>> subjects = [];
+
 
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
@@ -43,17 +45,22 @@ class DatabaseHelper {
 
 
   static Stream<List<List<dynamic>>> getSubjectsStream() async* {
-    while (true) {
-      // Warten Sie 1 Sekunde, bevor Sie die Datenbankabfrage erneut ausführen
-      Database? db = await instance.database;
-      yield* db!.query(DatabaseHelper.table)
-          .then((rows) => rows.map((row) => [row[DatabaseHelper.columnId], row[DatabaseHelper.columnSubject]]).toList())
-          .asStream();
+    Database? db = await instance.database;
 
-      await Future.delayed(Duration(seconds: 5));
+    //einamlig
+    yield subjects;
 
-    }
+    //alle 5 sekunden wird subjects auf aktualisierungen überprüft
+    yield* Stream.periodic(Duration(seconds: 5), (_) {
+      return subjects;
+    }).asyncMap((event) async => event);
 
+  }
+
+  static void getSubjects() async {
+    final db = await instance.database;
+    subjects = await db!.query(DatabaseHelper.table)
+        .then((rows) => rows.map((row) => [row[DatabaseHelper.columnId], row[DatabaseHelper.columnSubject]]).toList());
   }
 
 
@@ -70,6 +77,8 @@ class DatabaseHelper {
     */
     await db!.insert(table, row1);
     //await db!.insert(table, row2);
+
+    getSubjects();
   }
 
   static Future<void> removeAllSubjects() async {

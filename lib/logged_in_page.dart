@@ -25,12 +25,9 @@ class _LoggedInPageState extends State<LoggedInPage> {
 
     super.initState();
 
-    Future.delayed(Duration(seconds: 10), () {
+    Future.delayed(Duration(seconds: 4), () {
         DatabaseHelper.setSubjects();
     });
-
-
-
 
   }
 
