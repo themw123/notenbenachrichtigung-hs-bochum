@@ -18,8 +18,6 @@ class LoggedInPage extends StatefulWidget {
 }
 
 class _LoggedInPageState extends State<LoggedInPage> {
-  List<List<dynamic>> subjects = [];
-
   @override
   void initState() {
     //starte den background task
@@ -28,7 +26,6 @@ class _LoggedInPageState extends State<LoggedInPage> {
         existingWorkPolicy: ExistingWorkPolicy.replace);
 
     StreamControllerHelper.setSubjects();
-
 
     //neue daten einfügen
     Future.delayed(Duration(seconds: 4), () {
