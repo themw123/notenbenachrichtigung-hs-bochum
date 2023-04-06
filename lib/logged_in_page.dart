@@ -27,6 +27,9 @@ class _LoggedInPageState extends State<LoggedInPage> {
         frequency: Duration(minutes: 15),
         existingWorkPolicy: ExistingWorkPolicy.replace);
 
+    StreamControllerHelper.setSubjects();
+
+
     //neue daten einfügen
     Future.delayed(Duration(seconds: 4), () {
         DatabaseHelper.setSubjects();
