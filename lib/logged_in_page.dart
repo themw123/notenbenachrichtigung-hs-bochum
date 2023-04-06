@@ -23,6 +23,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
     Workmanager().registerPeriodicTask('checkGrade', 'checkGrade',
         frequency: Duration(minutes: 15),
         existingWorkPolicy: ExistingWorkPolicy.replace);
+
     super.initState();
 
     //updateSubjects();
@@ -36,7 +37,6 @@ class _LoggedInPageState extends State<LoggedInPage> {
     });
   }
   */
-
 
   @override
   Widget build(BuildContext context) {

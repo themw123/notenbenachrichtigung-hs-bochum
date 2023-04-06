@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:notenbenachrichtigung/database.dart';
 import 'package:notenbenachrichtigung/request.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:workmanager/workmanager.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -24,6 +23,9 @@ void main() async {
 
   //berechtigugn einfordern, dass app nicht von bsp energiesparmodus beeinträchtigt wird
   requestBatteryOptimizations();
+
+  //datenban initialisieren
+  await DatabaseHelper.instance.database;
 
   //initialisiere den background muss vor runApp erfolgen
   await Workmanager().initialize(backgroundTask);
@@ -72,10 +74,6 @@ void requestBatteryOptimizations() async {
 
 void backgroundTask() {
   Workmanager().executeTask((taskName, inputData) async {
-
-    //muss hier erfolgen damit init() erfolgt
-    final DatabaseHelper databaseHelper = DatabaseHelper.instance;
-    final Database db = await databaseHelper.database;
 
     await Request.getSubjectsHS();
 
