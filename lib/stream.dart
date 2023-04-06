@@ -15,7 +15,6 @@ class StreamControllerHelper {
   static StreamController<List<List>> get controller => _dataStreamController;
 
 
-
   // Methode, um den StreamController zu schließen und Speicherlecks zu vermeiden
   static void dispose() {
     _dataStreamController.close();

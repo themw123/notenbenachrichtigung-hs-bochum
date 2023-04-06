@@ -20,6 +20,8 @@ class LoggedInPage extends StatefulWidget {
 class _LoggedInPageState extends State<LoggedInPage> {
   List<List<dynamic>> subjects = [];
 
+  StreamSubscription? subscription;
+
   @override
   void initState() {
     //starte den background task
@@ -31,12 +33,11 @@ class _LoggedInPageState extends State<LoggedInPage> {
     //zuhören
     // Stream abonnieren und den Zustand der App aktualisieren
     //Prüfen, ob der Stream bereits abonniert ist
-    StreamControllerHelper.controller.stream.listen((newsubjects) {
-       setState(() {
-         subjects = newsubjects;
-       });
+    subscription = StreamControllerHelper.controller.stream.listen((newsubjects) {
+      setState(() {
+        subjects = newsubjects;
+      });
     });
-
 
     //neue daten einfügen
     Future.delayed(Duration(seconds: 4), () {
@@ -52,6 +53,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
   @override
   void dispose() {
     // Close the stream subscription and stream controller
+    subscription?.cancel();
     StreamControllerHelper.dispose();
     super.dispose();
   }
@@ -117,5 +119,9 @@ class _LoggedInPageState extends State<LoggedInPage> {
       ),
     );
   }
+
+
+
+
 }
 
