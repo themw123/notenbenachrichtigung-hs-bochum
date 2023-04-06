@@ -27,17 +27,6 @@ class _LoggedInPageState extends State<LoggedInPage> {
         frequency: Duration(minutes: 15),
         existingWorkPolicy: ExistingWorkPolicy.replace);
 
-
-    //zuhören
-    // Stream abonnieren und den Zustand der App aktualisieren
-    //Prüfen, ob der Stream bereits abonniert ist
-    StreamControllerHelper.controller.stream.listen((newsubjects) {
-       setState(() {
-         subjects = newsubjects;
-       });
-    });
-
-
     //neue daten einfügen
     Future.delayed(Duration(seconds: 4), () {
         DatabaseHelper.setSubjects();
@@ -48,13 +37,6 @@ class _LoggedInPageState extends State<LoggedInPage> {
 
   }
 
-
-  @override
-  void dispose() {
-    // Close the stream subscription and stream controller
-    StreamControllerHelper.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +56,14 @@ class _LoggedInPageState extends State<LoggedInPage> {
             Expanded(
               child:
 
-                  ListView.builder(
+              StreamBuilder<List<List<dynamic>>>(
+                stream: StreamControllerHelper.controller.stream,
+                builder: (BuildContext context, AsyncSnapshot<List<List<dynamic>>> snapshot) {
+                  if (!snapshot.hasData) {
+                    return CircularProgressIndicator();
+                  }
+                  final subjects = snapshot.data!;
+                  return ListView.builder(
                     itemCount: subjects.length,
                     itemBuilder: (context, index) {
                       final id = subjects[index][0];
@@ -84,7 +73,9 @@ class _LoggedInPageState extends State<LoggedInPage> {
                         title: Text(id_subject),
                       );
                     },
-                  )
+                  );
+                },
+              ),
 
 
             ),
