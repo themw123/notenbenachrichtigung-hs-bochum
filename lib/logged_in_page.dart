@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:notenbenachrichtigung/database.dart';
 import 'package:notenbenachrichtigung/main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:notenbenachrichtigung/stream.dart';
 import 'package:workmanager/workmanager.dart';
 
 class LoggedInPage extends StatefulWidget {
@@ -15,6 +18,7 @@ class LoggedInPage extends StatefulWidget {
 }
 
 class _LoggedInPageState extends State<LoggedInPage> {
+  List<List<dynamic>> subjects = [];
 
   @override
   void initState() {
@@ -23,12 +27,33 @@ class _LoggedInPageState extends State<LoggedInPage> {
         frequency: Duration(minutes: 15),
         existingWorkPolicy: ExistingWorkPolicy.replace);
 
-    super.initState();
 
-    Future.delayed(Duration(seconds: 4), () {
-        DatabaseHelper.setSubjects();
+    //zuhören
+    // Stream abonnieren und den Zustand der App aktualisieren
+    //Prüfen, ob der Stream bereits abonniert ist
+    StreamControllerHelper.controller.stream.listen((newsubjects) {
+       setState(() {
+         subjects = newsubjects;
+       });
     });
 
+
+    //neue daten einfügen
+    Future.delayed(Duration(seconds: 4), () {
+        DatabaseHelper.setSubjects();
+        StreamControllerHelper.setSubjects();
+    });
+
+    super.initState();
+
+  }
+
+
+  @override
+  void dispose() {
+    // Close the stream subscription and stream controller
+    StreamControllerHelper.dispose();
+    super.dispose();
   }
 
   @override
@@ -49,14 +74,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
             Expanded(
               child:
 
-              StreamBuilder<List<List<dynamic>>>(
-                stream: DatabaseHelper.getSubjectsStream(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return CircularProgressIndicator();
-                  }
-                  final subjects = snapshot.data!;
-                  return ListView.builder(
+                  ListView.builder(
                     itemCount: subjects.length,
                     itemBuilder: (context, index) {
                       final id = subjects[index][0];
@@ -66,9 +84,8 @@ class _LoggedInPageState extends State<LoggedInPage> {
                         title: Text(id_subject),
                       );
                     },
-                  );
-                },
-              ),
+                  )
+
 
             ),
             Expanded(

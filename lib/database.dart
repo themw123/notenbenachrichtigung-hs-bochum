@@ -44,23 +44,11 @@ class DatabaseHelper {
   }
 
 
-  static Stream<List<List<dynamic>>> getSubjectsStream() async* {
-    Database? db = await instance.database;
-
-    //einamlig
-    yield subjects;
-
-    //alle 5 sekunden wird subjects auf aktualisierungen überprüft
-    yield* Stream.periodic(Duration(seconds: 5), (_) {
-      return subjects;
-    }).asyncMap((event) async => event);
-
-  }
-
-  static void getSubjects() async {
+  static Future<List<List>> getSubjects() async {
     final db = await instance.database;
     subjects = await db!.query(DatabaseHelper.table)
         .then((rows) => rows.map((row) => [row[DatabaseHelper.columnId], row[DatabaseHelper.columnSubject]]).toList());
+    return subjects;
   }
 
 
@@ -78,7 +66,6 @@ class DatabaseHelper {
     await db!.insert(table, row1);
     //await db!.insert(table, row2);
 
-    getSubjects();
   }
 
   static Future<void> removeAllSubjects() async {
@@ -142,4 +129,5 @@ class DatabaseHelper {
       whereArgs: [id],
     );
   }
+
 }
