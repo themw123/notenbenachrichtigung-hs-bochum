@@ -1,3 +1,4 @@
+import 'package:notenbenachrichtigung/stream.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -43,22 +44,12 @@ class DatabaseHelper {
           ''');
   }
 
-  static Stream<List<List<dynamic>>> getSubjectsStream() async* {
-
-    Database? db = await instance.database;
-    yield* getSubjects().asStream();
-
-
-  }
-
-
   static Future<List<List>> getSubjects() async {
     final db = await instance.database;
     subjects = await db!.query(DatabaseHelper.table)
         .then((rows) => rows.map((row) => [row[DatabaseHelper.columnId], row[DatabaseHelper.columnSubject]]).toList());
     return subjects;
   }
-
 
   static Future<void> setSubjects() async {
     Database? db = await instance.database;

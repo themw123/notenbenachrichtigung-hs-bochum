@@ -1,3 +1,4 @@
+import 'package:notenbenachrichtigung/stream.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'notification.dart';
@@ -8,14 +9,16 @@ class Request {
 
   static Future<void> getSubjectsHS() async {
 
-    //datenbank aktualisieren. alte noten löschen neue hinzufügen
+    await DatabaseHelper.setSubjects();
 
     //wenn ein fach weniger dann notification
-
-    //noten holen und dann notification wenn nötig
     NotificationManager.init();
     NotificationManager.showNotification("Test Notification", "This is a test notification, !!!!!!!!");
+
   }
+
+
+
 
 
 

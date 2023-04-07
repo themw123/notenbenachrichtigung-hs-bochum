@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:notenbenachrichtigung/database.dart';
 import 'package:notenbenachrichtigung/main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:notenbenachrichtigung/stream.dart';
+import 'package:notenbenachrichtigung/request.dart';
 import 'package:workmanager/workmanager.dart';
 
 class LoggedInPage extends StatefulWidget {
@@ -18,25 +18,40 @@ class LoggedInPage extends StatefulWidget {
 }
 
 class _LoggedInPageState extends State<LoggedInPage> {
+
+  Timer? _timer;
+  List<List<dynamic>> subjects = [];
+
   @override
-  void initState() {
-    //starte den background task
-    Workmanager().registerPeriodicTask('checkGrade', 'checkGrade',
-        frequency: Duration(minutes: 15),
-        existingWorkPolicy: ExistingWorkPolicy.replace);
-
-    StreamControllerHelper.setSubjects();
-
-    //neue daten einfügen
-    Future.delayed(Duration(seconds: 4), () {
-        DatabaseHelper.setSubjects();
-        StreamControllerHelper.setSubjects();
-    });
-
+  initState() {
     super.initState();
-
+    //zu beginn einmal daten holen
+    fetchData();
+    //dann periodisch
+    periodic();
   }
 
+  Future<void> periodic() async {
+    _timer = Timer.periodic(const Duration(minutes: 5), (timer) async {
+      await fetchData();
+    });
+  }
+
+  Future<void> fetchData() async {
+    await Request.getSubjectsHS();
+    var temp = await DatabaseHelper.getSubjects();
+    if (mounted) {
+      setState(() {
+        subjects = temp;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Cancel the timer
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,14 +71,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
             Expanded(
               child:
 
-              StreamBuilder<List<List<dynamic>>>(
-                stream: StreamControllerHelper.controller.stream,
-                builder: (BuildContext context, AsyncSnapshot<List<List<dynamic>>> snapshot) {
-                  if (!snapshot.hasData) {
-                    return CircularProgressIndicator();
-                  }
-                  final subjects = snapshot.data!;
-                  return ListView.builder(
+                  ListView.builder(
                     itemCount: subjects.length,
                     itemBuilder: (context, index) {
                       final id = subjects[index][0];
@@ -73,9 +81,8 @@ class _LoggedInPageState extends State<LoggedInPage> {
                         title: Text(id_subject),
                       );
                     },
-                  );
-                },
-              ),
+                  ),
+
 
 
             ),

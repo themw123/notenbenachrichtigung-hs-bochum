@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:notenbenachrichtigung/database.dart';
-import 'package:notenbenachrichtigung/request.dart';
-import 'package:workmanager/workmanager.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'login_page.dart';
@@ -24,10 +22,8 @@ void main() async {
   //berechtigugn einfordern, dass app nicht von bsp energiesparmodus beeinträchtigt wird
   requestBatteryOptimizations();
 
-  DatabaseHelper.removeAllSubjects();
+  await DatabaseHelper.removeAllSubjects();
 
-  //initialisiere den background muss vor runApp erfolgen
-  await Workmanager().initialize(backgroundTask);
 
   runApp(MyApp(isLoggedIn: isLoggedIn, username: username, password: password));
 
@@ -71,14 +67,6 @@ void requestBatteryOptimizations() async {
   }
 }
 
-void backgroundTask() {
-  Workmanager().executeTask((taskName, inputData) async {
-
-    await Request.getSubjectsHS();
-
-    return Future.value(true);
-  });
-}
 
 
 
