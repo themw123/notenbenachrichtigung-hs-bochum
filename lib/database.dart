@@ -1,4 +1,5 @@
-import 'package:notenbenachrichtigung/stream.dart';
+import 'dart:io';
+
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -9,7 +10,12 @@ class DatabaseHelper {
   static const table = 'noten';
 
   static const columnId = 'id';
+  static const columnNr = 'nr';
   static const columnSubject = 'fach';
+  static const columnPruefer = 'pruefer';
+  static const columnDatum = 'datum';
+  static const columnRaum = 'raum';
+  static const columnUhrzeit = 'uhrzeit';
 
   static List<List<dynamic>> subjects = [];
 
@@ -26,6 +32,7 @@ class DatabaseHelper {
     return _database;
   }
 
+
   _init() async{
     return await openDatabase(
       join(await getDatabasesPath(), _databaseName),
@@ -39,7 +46,12 @@ class DatabaseHelper {
     await db.execute('''
           CREATE TABLE $table (
             $columnId INTEGER PRIMARY KEY,
-            $columnSubject TEXT NOT NULL
+            $columnNr INTEGER,
+            $columnSubject TEXT NOT NULL,
+            $columnPruefer TEXT NOT NULL,
+            $columnDatum TEXT NOT NULL,
+            $columnRaum TEXT NOT NULL,
+            $columnUhrzeit TEXT NOT NULL
           )
           ''');
   }
@@ -55,7 +67,12 @@ class DatabaseHelper {
     Database? db = await instance.database;
     // row to insert
     Map<String, dynamic> row1 = {
+      DatabaseHelper.columnNr: '1234',
       DatabaseHelper.columnSubject: 'testFach',
+      DatabaseHelper.columnPruefer: 'Merchiers',
+      DatabaseHelper.columnDatum: '19.10.23',
+      DatabaseHelper.columnRaum: 'H9',
+      DatabaseHelper.columnUhrzeit: '13:00'
     };
     /*
     Map<String, dynamic> row2 = {
@@ -72,7 +89,9 @@ class DatabaseHelper {
     await db!.delete(DatabaseHelper.table);
   }
 
-
+  static Future<void> deleteDatabasex() async {
+    await deleteDatabase(join(await getDatabasesPath(), _databaseName));
+  }
 
   // Helper methods
 

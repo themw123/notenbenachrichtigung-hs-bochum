@@ -5,6 +5,7 @@ import 'package:notenbenachrichtigung/database.dart';
 import 'package:notenbenachrichtigung/main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:notenbenachrichtigung/request.dart';
+import 'package:notenbenachrichtigung/subjectwidget.dart';
 
 class LoggedInPage extends StatefulWidget {
   const LoggedInPage({Key? key, required this.username, required this.password})
@@ -105,11 +106,13 @@ class _LoggedInPageState extends State<LoggedInPage> {
               child: ListView.builder(
                 itemCount: subjects.length,
                 itemBuilder: (context, index) {
-                  final id = subjects[index][0];
-                  final subject = subjects[index][1];
-                  final id_subject = id.toString() + ":" + subject;
-                  return ListTile(
-                    title: Text(id_subject),
+                  return SubjectWidget(
+                    columnNr: subjects[index][0],
+                    columnSubject: subjects[index][1],
+                    columnPruefer: subjects[index][2],
+                    columnDatum: subjects[index][3],
+                    columnRaum: subjects[index][4],
+                    columnUhrzeit: subjects[index][5],
                   );
                 },
               ),
@@ -120,3 +123,4 @@ class _LoggedInPageState extends State<LoggedInPage> {
     );
   }
 }
+
