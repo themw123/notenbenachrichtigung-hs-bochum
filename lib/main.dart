@@ -36,12 +36,30 @@ class MyApp extends StatelessWidget {
   final bool isLoggedIn;
   final String username;
   final String password;
+  final myCustomColor = const Color(0xffe2001a);
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+
+    final myCustomMaterialColor = MaterialColor(
+      myCustomColor.value,
+      <int, Color>{
+        50: myCustomColor.withOpacity(0.1),
+        100: myCustomColor.withOpacity(0.2),
+        200: myCustomColor.withOpacity(0.3),
+        300: myCustomColor.withOpacity(0.4),
+        400: myCustomColor.withOpacity(0.5),
+        500: myCustomColor.withOpacity(0.6),
+        600: myCustomColor.withOpacity(0.7),
+        700: myCustomColor.withOpacity(0.8),
+        800: myCustomColor.withOpacity(0.9),
+        900: myCustomColor.withOpacity(1),
+      },
+    );
+
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: '',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -52,7 +70,7 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: myCustomMaterialColor,
       ),
       home: isLoggedIn ? LoggedInPage(username: username, password: password) : LoginPage(),
     );
@@ -66,8 +84,6 @@ void requestBatteryOptimizations() async {
     // Die Berechtigung wurde nicht gewährt, die App kann möglicherweise nicht im Hintergrund ausgeführt werden
   }
 }
-
-
 
 
 

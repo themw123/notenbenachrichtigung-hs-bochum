@@ -5,7 +5,6 @@ import 'package:notenbenachrichtigung/database.dart';
 import 'package:notenbenachrichtigung/main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:notenbenachrichtigung/request.dart';
-import 'package:workmanager/workmanager.dart';
 
 class LoggedInPage extends StatefulWidget {
   const LoggedInPage({Key? key, required this.username, required this.password})
@@ -64,7 +63,6 @@ class _LoggedInPageState extends State<LoggedInPage> {
             onPressed: () async {
               final storage = new FlutterSecureStorage();
               await storage.deleteAll();
-              Workmanager().cancelByUniqueName("checkGrade");
               await Future.delayed(Duration(milliseconds: 300));
               Navigator.pushAndRemoveUntil(
                 context,
@@ -79,12 +77,11 @@ class _LoggedInPageState extends State<LoggedInPage> {
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.only(top: 16.0),
+        padding: EdgeInsets.fromLTRB(15, 10, 15, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Container(
-              padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -92,6 +89,16 @@ class _LoggedInPageState extends State<LoggedInPage> {
                   Text('Welcome ${widget.username}'),
                   Text('Your password is ${widget.password}'),
                 ],
+              ),
+            ),
+            Container(
+              child: const Text(
+                'Beobachten',
+                style: TextStyle(
+                  fontSize: 19.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.orange
+                ),
               ),
             ),
             Expanded(

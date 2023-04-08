@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'logged_in_page.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -18,12 +19,12 @@ class _LoginPageState extends State<LoginPage> {
     final String username = _usernameController.text;
     final String password = _passwordController.text;
 
-    final storage = new FlutterSecureStorage();
+    final storage = FlutterSecureStorage();
     storage.write(key: 'isLoggedIn', value: "true");
     storage.write(key: 'username', value: username);
     storage.write(key: 'password', value: password);
 
-    await Future.delayed(Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 300));
     // Weiterleitung zur LoggedInPage
     Navigator.pushReplacement(
       context,
@@ -36,36 +37,47 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
+      // das verhindert dass das Layout automatisch angepasst wird
       appBar: AppBar(
         title: const Text('Login'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Benutzername'),
-                controller: _usernameController,
-                validator: _validateInput,
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Passwort'),
-                obscureText: true,
-                controller: _passwordController,
-                validator: _validateInput,
-              ),
-              ElevatedButton(
-                child: const Text('login'),
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _submitForm();
-                  }
-                },
-              ),
-            ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                const SizedBox(height: 10),
+                SvgPicture.asset(
+                  'assets/hs.svg',
+                  width: 100,
+                  height: 100,
+                  color: Colors.red,
+                ),
+                TextFormField(
+                  decoration: const InputDecoration(labelText: 'Benutzername'),
+                  controller: _usernameController,
+                  validator: _validateInput,
+                ),
+                TextFormField(
+                  decoration: const InputDecoration(labelText: 'Passwort'),
+                  obscureText: true,
+                  controller: _passwordController,
+                  validator: _validateInput,
+                ),
+                ElevatedButton(
+                  child: const Text('login'),
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _submitForm();
+                    }
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
