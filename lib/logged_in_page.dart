@@ -18,7 +18,6 @@ class LoggedInPage extends StatefulWidget {
 }
 
 class _LoggedInPageState extends State<LoggedInPage> {
-
   Timer? _timer;
   List<List<dynamic>> subjects = [];
 
@@ -58,56 +57,54 @@ class _LoggedInPageState extends State<LoggedInPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: const Text('Logged in'),
+        title: const Text('Notenbenachrichtigung'),
+        actions: [
+          IconButton(
+            iconSize: 0,
+            onPressed: () async {
+              final storage = new FlutterSecureStorage();
+              await storage.deleteAll();
+              Workmanager().cancelByUniqueName("checkGrade");
+              await Future.delayed(Duration(milliseconds: 300));
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) =>
+                        MyApp(isLoggedIn: false, username: "", password: "")),
+                (route) => false,
+              );
+            },
+            icon: Image.asset('assets/logout.png'),
+          ),
+        ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.only(top: 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Text('Du bist eingeloggt!'),
-            Text('Welcome ${widget.username}'),
-            Text('Your password is ${widget.password}'),
-            Expanded(
-              child:
-
-                  ListView.builder(
-                    itemCount: subjects.length,
-                    itemBuilder: (context, index) {
-                      final id = subjects[index][0];
-                      final subject = subjects[index][1];
-                      final id_subject = id.toString() + ":" + subject;
-                      return ListTile(
-                        title: Text(id_subject),
-                      );
-                    },
-                  ),
-
-
-
+            Container(
+              padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text('Du bist eingeloggt!'),
+                  Text('Welcome ${widget.username}'),
+                  Text('Your password is ${widget.password}'),
+                ],
+              ),
             ),
             Expanded(
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    child: Text('logout'),
-                    onPressed: () async {
-                      final storage = new FlutterSecureStorage();
-                      await storage.deleteAll();
-                      Workmanager().cancelByUniqueName("checkGrade");
-                      await Future.delayed(Duration(milliseconds: 300));
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => MyApp(
-                                isLoggedIn: false, username: "", password: "")),
-                        (route) => false,
-                      );
-                    },
-                  ),
-                ),
+              child: ListView.builder(
+                itemCount: subjects.length,
+                itemBuilder: (context, index) {
+                  final id = subjects[index][0];
+                  final subject = subjects[index][1];
+                  final id_subject = id.toString() + ":" + subject;
+                  return ListTile(
+                    title: Text(id_subject),
+                  );
+                },
               ),
             ),
           ],
@@ -116,4 +113,3 @@ class _LoggedInPageState extends State<LoggedInPage> {
     );
   }
 }
-
