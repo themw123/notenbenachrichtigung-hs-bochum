@@ -132,6 +132,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
                         columnDatum: subjects[index][3],
                         columnRaum: subjects[index][4],
                         columnUhrzeit: subjects[index][5],
+                        columnOld: subjects[index][6],
                       );
                     },
                   ),
