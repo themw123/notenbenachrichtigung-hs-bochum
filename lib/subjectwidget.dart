@@ -7,6 +7,7 @@ class SubjectWidget extends StatefulWidget {
   final String columnRaum;
   final String columnUhrzeit;
   final bool columnOld;
+  final VoidCallback onDelete;
 
   const SubjectWidget({
     Key? key,
@@ -16,6 +17,7 @@ class SubjectWidget extends StatefulWidget {
     required this.columnRaum,
     required this.columnUhrzeit,
     required this.columnOld,
+    required this.onDelete,
   }) : super(key: key);
 
   @override
@@ -78,29 +80,25 @@ class _SubjectWidgetState extends State<SubjectWidget> {
                           fontSize: 14,
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'old: ${widget.columnOld}',
-                        style: TextStyle(
-                          fontSize: 14,
-                        ),
-                      ),
                     ],
                   ),
                 ),
               ),
+              if (widget.columnOld)
               Expanded(
                 flex: 4,
                 child: Container(
-                  height: 55,
+                  height: 45,
                   child: Center(
                     child: Ink.image(
                       image: AssetImage('assets/remove.png'),
                       fit: BoxFit.cover,
-                      width: 55,
-                      height: 55,
+                      width: 45,
+                      height: 45,
                       child: InkWell(
-                        onTap: () {},
+                        onTap: () {
+                          widget.onDelete();
+                        },
                         borderRadius: BorderRadius.circular(26.0),
                       ),
                     ),

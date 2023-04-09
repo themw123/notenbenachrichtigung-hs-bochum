@@ -47,6 +47,15 @@ class _LoggedInPageState extends State<LoggedInPage> {
     }
   }
 
+
+  void removeSubject(int index) {
+    setState(() {
+      subjects.removeAt(index);
+    });
+  }
+
+
+
   @override
   void dispose() {
     _timer?.cancel(); // Cancel the timer
@@ -133,6 +142,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
                         columnRaum: subjects[index][4],
                         columnUhrzeit: subjects[index][5],
                         columnOld: subjects[index][6],
+                        onDelete: () => removeSubject(index),
                       );
                     },
                   ),
