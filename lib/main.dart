@@ -19,7 +19,7 @@ void main() async {
   value = await storage.read(key: 'password');
   String password = value != null ? value as String : '';
 
-  await DatabaseHelper.deleteAllRows();
+  await DatabaseHelper.removeAllSubjects();
   //await DatabaseHelper.deleteDatabasex();
 
   //berechtigugn einfordern, dass app nicht von bsp energiesparmodus beeinträchtigt wird

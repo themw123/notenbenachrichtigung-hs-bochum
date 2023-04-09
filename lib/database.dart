@@ -54,7 +54,7 @@ class DatabaseHelper {
 
     await db.execute('''
           CREATE TABLE $tableNotenOld (
-            $columnId INTEGER PRIMARY KEY
+            $columnId INTEGER NOT NULL
           )
           ''');
   }
@@ -89,6 +89,8 @@ class DatabaseHelper {
   static Future<void> removeAllSubjects() async {
     Database? db = await instance.database;
     await db!.delete(DatabaseHelper.tableNoten);
+    await db!.delete(DatabaseHelper.tableNotenOld);
+
   }
 
   static Future<void> deleteDatabasex() async {
@@ -96,13 +98,6 @@ class DatabaseHelper {
   }
 
   // Helper methods
-
-  //delete all rows
-  static Future<int> deleteAllRows() async {
-    Database? db = await instance.database;
-    await db!.delete(tableNoten);
-    return await db!.delete(tableNotenOld);
-  }
 
   // Inserts at row in the database where each key in he Map is a column name
   // and the value is the column value. The return value is the id of the
