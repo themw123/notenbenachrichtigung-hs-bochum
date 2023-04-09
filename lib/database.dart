@@ -61,12 +61,38 @@ class DatabaseHelper {
 
   static Future<List<List>> getSubjects() async {
     final db = await instance.database;
-    subjects = await db!.query(DatabaseHelper.tableNoten)
-        .then((rows) => rows.map((row) => [row[DatabaseHelper.columnId], row[DatabaseHelper.columnSubject], row[DatabaseHelper.columnPruefer], row[DatabaseHelper.columnDatum], row[DatabaseHelper.columnRaum], row[DatabaseHelper.columnUhrzeit]]).toList());
-    //return subjects;
+
+
+    /// Generate a modifiable result set
+    List<Map<String, dynamic>> makeModifiableResults(
+        List<Map<String, dynamic>> results) {
+      // Generate modifiable
+      return List<Map<String, dynamic>>.generate(
+          results.length, (index) => Map<String, dynamic>.from(results[index]),
+          growable: true);
+    }
+
+    List<Map<String, dynamic>> rows = makeModifiableResults(await db!.query(DatabaseHelper.tableNoten));
 
 
 
+    // Überprüfe für jede Zeile, ob die ID in einer anderen Tabelle vorkommt
+    for (var row in rows) {
+      int id = row[DatabaseHelper.columnId];
+      bool found = await db.query(DatabaseHelper.tableNotenOld, where: 'id = ?', whereArgs: [id]).then((rows) => rows.isNotEmpty);
+      row['old'] = found;
+    }
+
+    // Konvertiere die Liste der Zeilen in die gewünschte Liste von Listen
+    List<List> subjects = rows.map((row) => [
+      row[DatabaseHelper.columnId],
+      row[DatabaseHelper.columnSubject],
+      row[DatabaseHelper.columnPruefer],
+      row[DatabaseHelper.columnDatum],
+      row[DatabaseHelper.columnRaum],
+      row[DatabaseHelper.columnUhrzeit],
+      row['old'] ?? false,
+    ]).toList();
 
 
     return subjects;
@@ -79,18 +105,28 @@ class DatabaseHelper {
     // row to insert
     Map<String, dynamic> row1 = {
       DatabaseHelper.columnSubject: 'testFach',
-      DatabaseHelper.columnPruefer: 'Merchiers',
+      DatabaseHelper.columnPruefer: '***REMOVED***',
       DatabaseHelper.columnDatum: '19.10.23',
       DatabaseHelper.columnRaum: 'H9',
       DatabaseHelper.columnUhrzeit: '13:00'
     };
 
     Map<String, dynamic> row2 = {
+      DatabaseHelper.columnSubject: 'testFach2',
+      DatabaseHelper.columnPruefer: 'Merchiers',
+      DatabaseHelper.columnDatum: '19.02.23',
+      DatabaseHelper.columnRaum: 'H8',
+      DatabaseHelper.columnUhrzeit: '12:00'
+    };
+
+    Map<String, dynamic> row3 = {
       DatabaseHelper.columnId: 1,
     };
 
     await db!.insert(tableNoten, row1);
-    await db!.insert(tableNotenOld, row2);
+    await db!.insert(tableNoten, row2);
+
+    await db!.insert(tableNotenOld, row3);
 
   }
 
