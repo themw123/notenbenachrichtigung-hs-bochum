@@ -127,11 +127,11 @@ class _LoggedInPageState extends State<LoggedInPage> {
                     itemCount: subjects.length,
                     itemBuilder: (context, index) {
                       return SubjectWidget(
-                        columnSubject: subjects[index][0],
-                        columnPruefer: subjects[index][1],
-                        columnDatum: subjects[index][2],
-                        columnRaum: subjects[index][3],
-                        columnUhrzeit: subjects[index][4],
+                        columnSubject: subjects[index][1],
+                        columnPruefer: subjects[index][2],
+                        columnDatum: subjects[index][3],
+                        columnRaum: subjects[index][4],
+                        columnUhrzeit: subjects[index][5],
                       );
                     },
                   ),

@@ -54,7 +54,7 @@ class DatabaseHelper {
 
     await db.execute('''
           CREATE TABLE $tableNotenOld (
-            $columnId INTEGER PRIMARY KEY,
+            $columnId INTEGER PRIMARY KEY
           )
           ''');
   }
@@ -62,7 +62,7 @@ class DatabaseHelper {
   static Future<List<List>> getSubjects() async {
     final db = await instance.database;
     subjects = await db!.query(DatabaseHelper.tableNoten)
-        .then((rows) => rows.map((row) => [row[DatabaseHelper.columnSubject], row[DatabaseHelper.columnPruefer], row[DatabaseHelper.columnDatum], row[DatabaseHelper.columnRaum], row[DatabaseHelper.columnUhrzeit]]).toList());
+        .then((rows) => rows.map((row) => [row[DatabaseHelper.columnId], row[DatabaseHelper.columnSubject], row[DatabaseHelper.columnPruefer], row[DatabaseHelper.columnDatum], row[DatabaseHelper.columnRaum], row[DatabaseHelper.columnUhrzeit]]).toList());
     return subjects;
   }
 
@@ -100,7 +100,8 @@ class DatabaseHelper {
   //delete all rows
   static Future<int> deleteAllRows() async {
     Database? db = await instance.database;
-    return await db!.delete('noten');
+    await db!.delete(tableNoten);
+    return await db!.delete(tableNotenOld);
   }
 
   // Inserts at row in the database where each key in he Map is a column name
