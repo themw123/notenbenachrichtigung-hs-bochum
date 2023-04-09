@@ -63,7 +63,15 @@ class DatabaseHelper {
     final db = await instance.database;
     subjects = await db!.query(DatabaseHelper.tableNoten)
         .then((rows) => rows.map((row) => [row[DatabaseHelper.columnId], row[DatabaseHelper.columnSubject], row[DatabaseHelper.columnPruefer], row[DatabaseHelper.columnDatum], row[DatabaseHelper.columnRaum], row[DatabaseHelper.columnUhrzeit]]).toList());
+    //return subjects;
+
+
+
+
+
     return subjects;
+
+
   }
 
   static Future<void> setSubjects() async {
