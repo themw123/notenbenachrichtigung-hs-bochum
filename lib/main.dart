@@ -9,7 +9,7 @@ import 'logged_in_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final storage = FlutterSecureStorage();
+  const storage = FlutterSecureStorage();
   String? value = await storage.read(key: 'isLoggedIn');
   bool isLoggedIn = value?.toLowerCase() == 'true';
 
@@ -19,10 +19,11 @@ void main() async {
   value = await storage.read(key: 'password');
   String password = value != null ? value as String : '';
 
+  DatabaseHelper.deleteAllRows();
+  //DatabaseHelper.deleteDatabasex();
+
   //berechtigugn einfordern, dass app nicht von bsp energiesparmodus beeinträchtigt wird
   requestBatteryOptimizations();
-
-  await DatabaseHelper.deleteDatabasex();
 
   runApp(MyApp(isLoggedIn: isLoggedIn, username: username, password: password));
 

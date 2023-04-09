@@ -13,6 +13,7 @@ class LoggedInPage extends StatefulWidget {
   final String username;
   final String password;
 
+
   @override
   _LoggedInPageState createState() => _LoggedInPageState();
 }
@@ -54,6 +55,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
 
   @override
   Widget build(BuildContext context) {
+    Color myColor = const Color.fromRGBO(226, 0, 26, 1.0);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -62,9 +64,9 @@ class _LoggedInPageState extends State<LoggedInPage> {
           IconButton(
             iconSize: 0,
             onPressed: () async {
-              final storage = new FlutterSecureStorage();
+              final storage = FlutterSecureStorage();
               await storage.deleteAll();
-              await Future.delayed(Duration(milliseconds: 300));
+              await Future.delayed(const Duration(milliseconds: 300));
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
@@ -78,43 +80,62 @@ class _LoggedInPageState extends State<LoggedInPage> {
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.fromLTRB(15, 10, 15, 0),
+        padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
+            const SizedBox(height: 20), // 16 Pixel Abstand
             Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text('Du bist eingeloggt!'),
-                  Text('Welcome ${widget.username}'),
-                  Text('Your password is ${widget.password}'),
-                ],
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10.0),
+                border: Border.all(
+                  color: myColor,
+                  width: 2.0,
+                ),
               ),
-            ),
-            Container(
-              child: const Text(
-                'Beobachten',
-                style: TextStyle(
-                  fontSize: 19.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.orange
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Text(
+                  'Benutztername: ${widget.username}',
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold,
+                    color: myColor
+                  ),
                 ),
               ),
             ),
+            const SizedBox(height: 20), // 16 Pixel Abstand
+            const Text(
+              'Beobachten',
+              style: TextStyle(
+                  fontSize: 19.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black),
+            ),
+            const SizedBox(height: 10), // 16 Pixel Abstand
             Expanded(
-              child: ListView.builder(
-                itemCount: subjects.length,
-                itemBuilder: (context, index) {
-                  return SubjectWidget(
-                    columnNr: subjects[index][0],
-                    columnSubject: subjects[index][1],
-                    columnPruefer: subjects[index][2],
-                    columnDatum: subjects[index][3],
-                    columnRaum: subjects[index][4],
-                    columnUhrzeit: subjects[index][5],
-                  );
-                },
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(16.0),
+                    itemCount: subjects.length,
+                    itemBuilder: (context, index) {
+                      return SubjectWidget(
+                        columnSubject: subjects[index][0],
+                        columnPruefer: subjects[index][1],
+                        columnDatum: subjects[index][2],
+                        columnRaum: subjects[index][3],
+                        columnUhrzeit: subjects[index][4],
+                      );
+                    },
+                  ),
+                ),
               ),
             ),
           ],
@@ -123,4 +144,3 @@ class _LoggedInPageState extends State<LoggedInPage> {
     );
   }
 }
-

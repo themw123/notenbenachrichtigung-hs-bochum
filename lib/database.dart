@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -7,10 +5,10 @@ class DatabaseHelper {
   static const _databaseName = "notenbenachrichtigung.db";
   static const _databaseVersion = 1;
 
-  static const table = 'noten';
+  static const tableNoten = 'noten';
+  static const tableNotenOld = 'notenold';
 
   static const columnId = 'id';
-  static const columnNr = 'nr';
   static const columnSubject = 'fach';
   static const columnPruefer = 'pruefer';
   static const columnDatum = 'datum';
@@ -44,9 +42,8 @@ class DatabaseHelper {
   // SQL code to create the database table
   static Future _onCreate(Database db, int version) async {
     await db.execute('''
-          CREATE TABLE $table (
+          CREATE TABLE $tableNoten (
             $columnId INTEGER PRIMARY KEY,
-            $columnNr INTEGER,
             $columnSubject TEXT NOT NULL,
             $columnPruefer TEXT NOT NULL,
             $columnDatum TEXT NOT NULL,
@@ -54,12 +51,18 @@ class DatabaseHelper {
             $columnUhrzeit TEXT NOT NULL
           )
           ''');
+
+    await db.execute('''
+          CREATE TABLE $tableNotenOld (
+            $columnId INTEGER PRIMARY KEY,
+          )
+          ''');
   }
 
   static Future<List<List>> getSubjects() async {
     final db = await instance.database;
-    subjects = await db!.query(DatabaseHelper.table)
-        .then((rows) => rows.map((row) => [row[DatabaseHelper.columnId], row[DatabaseHelper.columnSubject]]).toList());
+    subjects = await db!.query(DatabaseHelper.tableNoten)
+        .then((rows) => rows.map((row) => [row[DatabaseHelper.columnSubject], row[DatabaseHelper.columnPruefer], row[DatabaseHelper.columnDatum], row[DatabaseHelper.columnRaum], row[DatabaseHelper.columnUhrzeit]]).toList());
     return subjects;
   }
 
@@ -67,26 +70,25 @@ class DatabaseHelper {
     Database? db = await instance.database;
     // row to insert
     Map<String, dynamic> row1 = {
-      DatabaseHelper.columnNr: '1234',
       DatabaseHelper.columnSubject: 'testFach',
       DatabaseHelper.columnPruefer: 'Merchiers',
       DatabaseHelper.columnDatum: '19.10.23',
       DatabaseHelper.columnRaum: 'H9',
       DatabaseHelper.columnUhrzeit: '13:00'
     };
-    /*
+
     Map<String, dynamic> row2 = {
-      DatabaseHelper.columnSubject: 'testFach2',
+      DatabaseHelper.columnId: 1,
     };
-    */
-    await db!.insert(table, row1);
-    //await db!.insert(table, row2);
+
+    await db!.insert(tableNoten, row1);
+    await db!.insert(tableNotenOld, row2);
 
   }
 
   static Future<void> removeAllSubjects() async {
     Database? db = await instance.database;
-    await db!.delete(DatabaseHelper.table);
+    await db!.delete(DatabaseHelper.tableNoten);
   }
 
   static Future<void> deleteDatabasex() async {
@@ -106,21 +108,21 @@ class DatabaseHelper {
   // inserted row.
   static Future<int> insert(Map<String, dynamic> row) async {
     Database? db = await instance.database;
-    return await db!.insert(table, row);
+    return await db!.insert(tableNoten, row);
   }
 
   // All of the rows are returned as a list of maps, where each map is
   // a key-value list of columns.
   static Future<List<Map<String, dynamic>>> queryAllRows() async {
     Database? db = await instance.database;
-    return await db!.query(table);
+    return await db!.query(tableNoten);
   }
 
   // All of the methods (insert, query, update, delete) can also be done using
   // raw SQL commands. This method uses a raw query to give the row count.
   static Future<int> queryRowCount() async {
     Database? db = await instance.database;
-    final results = await db!.rawQuery('SELECT COUNT(*) FROM $table');
+    final results = await db!.rawQuery('SELECT COUNT(*) FROM $tableNoten');
     return Sqflite.firstIntValue(results) ?? 0;
   }
 
@@ -130,7 +132,7 @@ class DatabaseHelper {
     Database? db = await instance.database;
     int id = row[columnId];
     return await db!.update(
-      table,
+      tableNoten,
       row,
       where: '$columnId = ?',
       whereArgs: [id],
@@ -142,7 +144,7 @@ class DatabaseHelper {
   static Future<int> delete(int id) async {
     Database? db = await instance.database;
     return await db!.delete(
-      table,
+      tableNoten,
       where: '$columnId = ?',
       whereArgs: [id],
     );
