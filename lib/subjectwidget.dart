@@ -6,7 +6,7 @@ class SubjectWidget extends StatefulWidget {
   final String columnDatum;
   final String columnRaum;
   final String columnUhrzeit;
-  final bool columnOld;
+  final int columnOld;
   final VoidCallback onDelete;
 
   const SubjectWidget({
@@ -84,27 +84,36 @@ class _SubjectWidgetState extends State<SubjectWidget> {
                   ),
                 ),
               ),
-              if (widget.columnOld)
-              Expanded(
-                flex: 4,
-                child: Container(
-                  height: 45,
-                  child: Center(
-                    child: Ink.image(
-                      image: AssetImage('assets/remove.png'),
-                      fit: BoxFit.cover,
-                      width: 45,
-                      height: 45,
-                      child: InkWell(
-                        onTap: () {
-                          widget.onDelete();
-                        },
-                        borderRadius: BorderRadius.circular(26.0),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              if (widget.columnOld == 1)
+                Expanded(
+                    flex: 4,
+                    child: Padding(
+                        padding: EdgeInsets.only(right: 10),
+                        child: Column(children: <Widget>[
+                          const Text(
+                            'Note verfügbar',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          ),
+                          const Text("gesehen"),
+                          const SizedBox(height: 8),
+                          Center(
+                            child: Ink.image(
+                              image: AssetImage('assets/check.png'),
+                              fit: BoxFit.cover,
+                              width: 45,
+                              height: 45,
+                              child: InkWell(
+                                onTap: () {
+                                  widget.onDelete();
+                                },
+                                borderRadius: BorderRadius.circular(26.0),
+                              ),
+                            ),
+                          ),
+                        ]))),
             ],
           ),
         ),

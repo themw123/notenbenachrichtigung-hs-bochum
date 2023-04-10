@@ -20,7 +20,8 @@ class LoggedInPage extends StatefulWidget {
 
 class _LoggedInPageState extends State<LoggedInPage> {
   Timer? _timer;
-  List<List<dynamic>> subjects = [];
+  List<Map<String, dynamic>> subjects = [];
+  Color myColor = const Color.fromRGBO(226, 0, 26, 1.0);
 
   @override
   initState() {
@@ -64,7 +65,6 @@ class _LoggedInPageState extends State<LoggedInPage> {
 
   @override
   Widget build(BuildContext context) {
-    Color myColor = const Color.fromRGBO(226, 0, 26, 1.0);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -136,12 +136,12 @@ class _LoggedInPageState extends State<LoggedInPage> {
                     itemCount: subjects.length,
                     itemBuilder: (context, index) {
                       return SubjectWidget(
-                        columnSubject: subjects[index][1],
-                        columnPruefer: subjects[index][2],
-                        columnDatum: subjects[index][3],
-                        columnRaum: subjects[index][4],
-                        columnUhrzeit: subjects[index][5],
-                        columnOld: subjects[index][6],
+                        columnSubject: subjects[index].values.elementAt(1),
+                        columnPruefer: subjects[index].values.elementAt(2),
+                        columnDatum: subjects[index].values.elementAt(3),
+                        columnRaum: subjects[index].values.elementAt(4),
+                        columnUhrzeit: subjects[index].values.elementAt(5),
+                        columnOld: subjects[index].values.elementAt(6),
                         onDelete: () => removeSubject(index),
                       );
                     },
