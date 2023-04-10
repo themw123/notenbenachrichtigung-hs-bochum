@@ -19,42 +19,53 @@ class LoggedInPage extends StatefulWidget {
 }
 
 class _LoggedInPageState extends State<LoggedInPage> {
-  Timer? _timer;
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   List<Map<String, dynamic>> subjects = [];
+
+  Timer? _timer;
   Color myColor = const Color.fromRGBO(226, 0, 26, 1.0);
 
   @override
   initState() {
     super.initState();
-    //zu beginn einmal daten holen
-    fetchData();
-    //dann periodisch
-    periodic();
   }
 
-  Future<void> periodic() async {
-    _timer = Timer.periodic(const Duration(minutes: 5), (timer) async {
+  Future<List<Map<String, dynamic>>> periodicFetch() async {
+    subjects = await fetchData();
+    _timer = Timer.periodic(const Duration(seconds: 10), (timer) async {
       await fetchData();
     });
+    return subjects;
   }
 
-  Future<void> fetchData() async {
+  Future<List<Map<String, dynamic>>> fetchData() async {
     await Request.getSubjectsHS();
-    var temp = await DatabaseHelper.getSubjects();
-    if (mounted) {
-      setState(() {
-        subjects = temp;
-      });
-    }
+    return await DatabaseHelper.getSubjects();
   }
 
-
+  /*
   void removeSubject(int index) {
     setState(() {
       subjects.removeAt(index);
     });
   }
+  */
 
+
+  void removeSubject(int index) {
+    final item = subjects.removeAt(index);
+    /*
+    _listKey.currentState?.removeItem(index, (context, animation) => SubjectWidget(
+      columnSubject: subjects[index].values.elementAt(1),
+      columnPruefer: subjects[index].values.elementAt(2),
+      columnDatum: subjects[index].values.elementAt(3),
+      columnRaum: subjects[index].values.elementAt(4),
+      columnUhrzeit: subjects[index].values.elementAt(5),
+      columnOld: subjects[index].values.elementAt(6),
+      onDelete: () => removeSubject(index),
+    ));
+    */
+  }
 
 
   @override
@@ -73,7 +84,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
           IconButton(
             iconSize: 0,
             onPressed: () async {
-              final storage = FlutterSecureStorage();
+              const storage = FlutterSecureStorage();
               await storage.deleteAll();
               await Future.delayed(const Duration(milliseconds: 300));
               Navigator.pushAndRemoveUntil(
@@ -81,7 +92,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
                 MaterialPageRoute(
                     builder: (BuildContext context) =>
                         MyApp(isLoggedIn: false, username: "", password: "")),
-                (route) => false,
+                    (route) => false,
               );
             },
             icon: Image.asset('assets/logout.png'),
@@ -107,9 +118,9 @@ class _LoggedInPageState extends State<LoggedInPage> {
                 child: Text(
                   'Benutztername: ${widget.username}',
                   style: TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                    color: myColor
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                      color: myColor
                   ),
                 ),
               ),
@@ -131,19 +142,39 @@ class _LoggedInPageState extends State<LoggedInPage> {
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(20.0),
                   ),
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16.0),
-                    itemCount: subjects.length,
-                    itemBuilder: (context, index) {
-                      return SubjectWidget(
-                        columnSubject: subjects[index].values.elementAt(1),
-                        columnPruefer: subjects[index].values.elementAt(2),
-                        columnDatum: subjects[index].values.elementAt(3),
-                        columnRaum: subjects[index].values.elementAt(4),
-                        columnUhrzeit: subjects[index].values.elementAt(5),
-                        columnOld: subjects[index].values.elementAt(6),
-                        onDelete: () => removeSubject(index),
-                      );
+                  child: FutureBuilder<List<Map<String, dynamic>>>(
+                    future: periodicFetch(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(
+                            child: Text('Fehler beim Laden der Daten: ${snapshot.error}')
+                        );
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const Center(child: Text('Keine Daten vorhanden'));
+                      } else {
+                        final subjects = snapshot.data!;
+                        return AnimatedList(
+                          key: _listKey,
+                          initialItemCount: subjects.length,
+                          padding: const EdgeInsets.all(16.0),
+                          itemBuilder: (context, index, animation) {
+                            return SizeTransition(
+                              sizeFactor: animation,
+                              child: SubjectWidget(
+                                columnSubject: subjects[index].values.elementAt(1),
+                                columnPruefer: subjects[index].values.elementAt(2),
+                                columnDatum: subjects[index].values.elementAt(3),
+                                columnRaum: subjects[index].values.elementAt(4),
+                                columnUhrzeit: subjects[index].values.elementAt(5),
+                                columnOld: subjects[index].values.elementAt(6),
+                                onDelete: () => removeSubject(index),
+                              ),
+                            );
+                          },
+                        );
+                      }
                     },
                   ),
                 ),
