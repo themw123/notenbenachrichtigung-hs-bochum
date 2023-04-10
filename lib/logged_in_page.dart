@@ -30,6 +30,8 @@ class _LoggedInPageState extends State<LoggedInPage> {
     super.initState();
   }
 
+
+  //es geht noch nicht für periodic, die neuen werden nicht angezeigt
   Future<List<Map<String, dynamic>>> periodicFetch() async {
     subjects = await fetchData();
     _timer = Timer.periodic(const Duration(seconds: 10), (timer) async {
