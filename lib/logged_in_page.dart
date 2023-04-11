@@ -45,7 +45,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
     //subjects aus datenbank holen
     fetchData(DatabaseHelper.getSubjects);
     //daten periodisch von hs bochum holen
-    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
+    _timer = Timer.periodic(const Duration(minutes: 5), (timer) {
       fetchData(Request.setSubjectsHS);
     });
   }

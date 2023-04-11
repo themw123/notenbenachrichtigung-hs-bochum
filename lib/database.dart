@@ -102,7 +102,7 @@ class DatabaseHelper {
       DatabaseHelper.columnOld: 1
     };
 
-    //await db!.insert(tableNoten, row1);
+    await db!.insert(tableNoten, row1);
 
     await db!.insert(tableNotenOld, row2);
   }
