@@ -103,8 +103,7 @@ class DatabaseHelper {
     };
 
     await db!.insert(tableNoten, row1);
-
-    await db!.insert(tableNotenOld, row2);
+    await db.insert(tableNotenOld, row2);
   }
 
   static Future<void> removeAllSubjects() async {
