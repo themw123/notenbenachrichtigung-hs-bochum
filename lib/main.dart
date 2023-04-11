@@ -20,7 +20,6 @@ void main() async {
   String password = value != null ? value as String : '';
 
   await DatabaseHelper.removeAllSubjects();
-  await DatabaseHelper.setSubjects();
   //await DatabaseHelper.deleteDatabasex();
 
   //berechtigugn einfordern, dass app nicht von bsp energiesparmodus beeinträchtigt wird
