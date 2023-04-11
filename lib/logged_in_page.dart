@@ -38,16 +38,9 @@ class _LoggedInPageState extends State<LoggedInPage> {
   }
 
   fetchData() async {
-    //damit ladekreis angezeigt wird solange daten gefetcht werden
-    setState(() {
-      subjects = null;
-    });
-
-    await Request.setSubjectsHS();
-
     if (mounted) {
       setState(() {
-        subjects = DatabaseHelper.getSubjects();
+        subjects = Request.setSubjectsHS();
       });
     }
   }
@@ -150,8 +143,6 @@ class _LoggedInPageState extends State<LoggedInPage> {
                   ),
                   child: FutureBuilder<List<Map<String, dynamic>>>(
                     future: subjects,
-                    //der key ist dazu da, damit setState(subjects=null) auch funktioniert
-                    key: ValueKey(subjects),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting ||
                           snapshot.data == null) {
@@ -162,8 +153,15 @@ class _LoggedInPageState extends State<LoggedInPage> {
                                 'Fehler beim Laden der Daten: ${snapshot.error}'));
                       } else if (snapshot.data!.isEmpty) {
                         return const Center(
+                          child: SizedBox(
+                            width: 200, // adjust the width as needed
                             child: Text(
-                                'Es gibt keine Noten auf die gewartet wird'));
+                              'Es gibt keine Noten auf die gewartet wird',
+                              textAlign: TextAlign
+                                  .center, // center the text within the container
+                            ),
+                          ),
+                        );
                       } else {
                         final subjects = snapshot.data!;
                         return AnimatedList(
