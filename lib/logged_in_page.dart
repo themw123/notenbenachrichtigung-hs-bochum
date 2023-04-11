@@ -65,19 +65,21 @@ class _LoggedInPageState extends State<LoggedInPage> {
       DatabaseHelper.delete(id);
 
       _listKey.currentState?.removeItem(
-          index,
-          (context, animation) => SubjectWidget(
-                item: removedSubject,
-                animation: animation,
-                columnId: removedSubject.values.elementAt(0),
-                columnSubject: removedSubject.values.elementAt(1),
-                columnPruefer: removedSubject.values.elementAt(2),
-                columnDatum: removedSubject.values.elementAt(3),
-                columnRaum: removedSubject.values.elementAt(4),
-                columnUhrzeit: removedSubject.values.elementAt(5),
-                columnOld: removedSubject.values.elementAt(6),
-                onDelete: () => removeSubject(index),
-              ));
+        index,
+        (context, animation) => SubjectWidget(
+          item: removedSubject,
+          animation: animation,
+          columnId: removedSubject.values.elementAt(0),
+          columnSubject: removedSubject.values.elementAt(1),
+          columnPruefer: removedSubject.values.elementAt(2),
+          columnDatum: removedSubject.values.elementAt(3),
+          columnRaum: removedSubject.values.elementAt(4),
+          columnUhrzeit: removedSubject.values.elementAt(5),
+          columnOld: removedSubject.values.elementAt(6),
+          onDelete: () => removeSubject(index),
+        ),
+        duration: const Duration(milliseconds: 500),
+      );
     });
   }
 
