@@ -30,8 +30,7 @@ class SubjectWidget extends StatefulWidget {
   _SubjectWidgetState createState() => _SubjectWidgetState();
 }
 
-class _SubjectWidgetState extends State<SubjectWidget>
-    with SingleTickerProviderStateMixin {
+class _SubjectWidgetState extends State<SubjectWidget> {
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
