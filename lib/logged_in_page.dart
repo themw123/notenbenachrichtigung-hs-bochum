@@ -1,11 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:notenbenachrichtigung/database.dart';
 import 'package:notenbenachrichtigung/main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:notenbenachrichtigung/request.dart';
 import 'package:notenbenachrichtigung/subjectwidget.dart';
+
+import 'database.dart';
 
 class LoggedInPage extends StatefulWidget {
   const LoggedInPage({Key? key, required this.username, required this.password})
@@ -30,42 +31,54 @@ class _LoggedInPageState extends State<LoggedInPage> {
     periodicFetch();
   }
 
+  //weil async nicht geht in initState aber hiermit.
+  @override
+  Future<void> didChangeDependencies() async {
+    super.didChangeDependencies();
+    //wenn subjects leer ist dann request machen. weil periodic erfolgt erst nach x stunden selbst wenn neu eingeloggt oder neustart. ist nötig, damit nicht zu viele requests
+    if ((await DatabaseHelper.getSubjects()).isEmpty) {
+      fetchData(Request.setSubjectsHS);
+    }
+  }
+
   periodicFetch() {
-    fetchData();
+    //subjects aus datenbank holen
+    fetchData(DatabaseHelper.getSubjects);
+    //daten periodisch von hs bochum holen
     _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
-      fetchData();
+      fetchData(Request.setSubjectsHS);
     });
   }
 
-  fetchData() async {
+  fetchData(Function method) {
     if (mounted) {
       setState(() {
-        subjects = Request.setSubjectsHS();
+        subjects = method();
       });
     }
   }
 
-  /*
   void removeSubject(int index) {
-    setState(() {
-      subjects.removeAt(index);
-    });
-  }
-  */
+    subjects?.then((subjects) {
+      final removedSubject = subjects.removeAt(index);
+      final id = removedSubject.values.elementAt(0);
+      DatabaseHelper.delete(id);
 
-  void removeSubject(int index) {
-    //final item = subjects.removeAt(index);
-    /*
-    _listKey.currentState?.removeItem(index, (context, animation) => SubjectWidget(
-      columnSubject: subjects[index].values.elementAt(1),
-      columnPruefer: subjects[index].values.elementAt(2),
-      columnDatum: subjects[index].values.elementAt(3),
-      columnRaum: subjects[index].values.elementAt(4),
-      columnUhrzeit: subjects[index].values.elementAt(5),
-      columnOld: subjects[index].values.elementAt(6),
-      onDelete: () => removeSubject(index),
-    ));
-    */
+      _listKey.currentState?.removeItem(
+          index,
+          (context, animation) => SubjectWidget(
+                item: removedSubject,
+                animation: animation,
+                columnId: removedSubject.values.elementAt(0),
+                columnSubject: removedSubject.values.elementAt(1),
+                columnPruefer: removedSubject.values.elementAt(2),
+                columnDatum: removedSubject.values.elementAt(3),
+                columnRaum: removedSubject.values.elementAt(4),
+                columnUhrzeit: removedSubject.values.elementAt(5),
+                columnOld: removedSubject.values.elementAt(6),
+                onDelete: () => removeSubject(index),
+              ));
+    });
   }
 
   @override
@@ -169,21 +182,20 @@ class _LoggedInPageState extends State<LoggedInPage> {
                           initialItemCount: subjects.length,
                           padding: const EdgeInsets.all(16.0),
                           itemBuilder: (context, index, animation) {
-                            return SizeTransition(
-                              sizeFactor: animation,
-                              child: SubjectWidget(
-                                columnSubject:
-                                    subjects[index].values.elementAt(1),
-                                columnPruefer:
-                                    subjects[index].values.elementAt(2),
-                                columnDatum:
-                                    subjects[index].values.elementAt(3),
-                                columnRaum: subjects[index].values.elementAt(4),
-                                columnUhrzeit:
-                                    subjects[index].values.elementAt(5),
-                                columnOld: subjects[index].values.elementAt(6),
-                                onDelete: () => removeSubject(index),
-                              ),
+                            return SubjectWidget(
+                              item: subjects[index],
+                              animation: animation,
+                              columnId: subjects[index].values.elementAt(0),
+                              columnSubject:
+                                  subjects[index].values.elementAt(1),
+                              columnPruefer:
+                                  subjects[index].values.elementAt(2),
+                              columnDatum: subjects[index].values.elementAt(3),
+                              columnRaum: subjects[index].values.elementAt(4),
+                              columnUhrzeit:
+                                  subjects[index].values.elementAt(5),
+                              columnOld: subjects[index].values.elementAt(6),
+                              onDelete: () => removeSubject(index),
                             );
                           },
                         );

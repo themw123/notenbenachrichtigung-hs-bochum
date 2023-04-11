@@ -95,15 +95,6 @@ class DatabaseHelper {
 
     Map<String, dynamic> row2 = {
       DatabaseHelper.columnSubject: 'testFach2',
-      DatabaseHelper.columnPruefer: 'Merchiers',
-      DatabaseHelper.columnDatum: '19.02.23',
-      DatabaseHelper.columnRaum: 'H8',
-      DatabaseHelper.columnUhrzeit: '12:00',
-      DatabaseHelper.columnOld: 0
-    };
-
-    Map<String, dynamic> row3 = {
-      DatabaseHelper.columnSubject: 'testFach3',
       DatabaseHelper.columnPruefer: '***REMOVED***',
       DatabaseHelper.columnDatum: '19.08.23',
       DatabaseHelper.columnRaum: 'H7',
@@ -111,10 +102,9 @@ class DatabaseHelper {
       DatabaseHelper.columnOld: 1
     };
 
-    await db!.insert(tableNoten, row1);
-    await db!.insert(tableNoten, row2);
+    //await db!.insert(tableNoten, row1);
 
-    await db!.insert(tableNotenOld, row3);
+    await db!.insert(tableNotenOld, row2);
   }
 
   static Future<void> removeAllSubjects() async {
@@ -167,10 +157,10 @@ class DatabaseHelper {
 
   // Deletes the row specified by the id. The number of affected rows is
   // returned. This should be 1 as long as the row exists.
-  static Future<int> delete(int id) async {
+  static Future<int> delete(id) async {
     Database? db = await instance.database;
     return await db!.delete(
-      tableNoten,
+      tableNotenOld,
       where: '$columnId = ?',
       whereArgs: [id],
     );

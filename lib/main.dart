@@ -19,18 +19,22 @@ void main() async {
   value = await storage.read(key: 'password');
   String password = value != null ? value as String : '';
 
-  await DatabaseHelper.removeAllSubjects();
+  //DatabaseHelper.setSubjects();
+  //await DatabaseHelper.removeAllSubjects();
   //await DatabaseHelper.deleteDatabasex();
 
   //berechtigugn einfordern, dass app nicht von bsp energiesparmodus beeinträchtigt wird
   requestBatteryOptimizations();
 
   runApp(MyApp(isLoggedIn: isLoggedIn, username: username, password: password));
-
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key, required this.isLoggedIn, required this.username, required this.password})
+  const MyApp(
+      {Key? key,
+      required this.isLoggedIn,
+      required this.username,
+      required this.password})
       : super(key: key);
 
   final bool isLoggedIn;
@@ -41,7 +45,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-
     final myCustomMaterialColor = MaterialColor(
       myCustomColor.value,
       <int, Color>{
@@ -72,7 +75,9 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: myCustomMaterialColor,
       ),
-      home: isLoggedIn ? LoggedInPage(username: username, password: password) : LoginPage(),
+      home: isLoggedIn
+          ? LoggedInPage(username: username, password: password)
+          : LoginPage(),
     );
   }
 }
@@ -84,6 +89,3 @@ void requestBatteryOptimizations() async {
     // Die Berechtigung wurde nicht gewährt, die App kann möglicherweise nicht im Hintergrund ausgeführt werden
   }
 }
-
-
-
