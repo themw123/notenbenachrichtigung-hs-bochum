@@ -30,110 +30,120 @@ class SubjectWidget extends StatefulWidget {
   _SubjectWidgetState createState() => _SubjectWidgetState();
 }
 
-class _SubjectWidgetState extends State<SubjectWidget> {
+class _SubjectWidgetState extends State<SubjectWidget>
+    with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
-    return SlideTransition(
-      position: Tween<Offset>(
-        begin: const Offset(-1, 0),
-        end: Offset.zero,
-      ).animate(CurvedAnimation(parent: widget.animation, curve: Curves.ease)),
-      child: GestureDetector(
-        child: Card(
-          elevation: 2,
-          margin: const EdgeInsets.all(8),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Container(
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 6,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 8),
-                        Text(
-                          widget.columnSubject,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+    return AnimatedBuilder(
+      animation: widget.animation,
+      builder: (context, child) {
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(-2, 0),
+            end: Offset.zero,
+          ).animate(
+              CurvedAnimation(parent: widget.animation, curve: Curves.ease)),
+          child: SizeTransition(
+            sizeFactor: widget.animation,
+            child: GestureDetector(
+              child: Card(
+                elevation: 2,
+                margin: const EdgeInsets.all(8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Container(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 6,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 8),
+                              Text(
+                                widget.columnSubject,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Prüfer: ${widget.columnPruefer}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Datum: ${widget.columnDatum}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Raum: ${widget.columnRaum}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Uhrzeit: ${widget.columnUhrzeit}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Prüfer: ${widget.columnPruefer}',
-                          style: TextStyle(
-                            fontSize: 14,
+                      ),
+                      if (widget.columnOld == 1)
+                        Expanded(
+                          flex: 4,
+                          child: Padding(
+                            padding: EdgeInsets.only(right: 10),
+                            child: Column(
+                              children: <Widget>[
+                                const Text(
+                                  'Note verfügbar',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                const Text("gesehen"),
+                                const SizedBox(height: 8),
+                                Center(
+                                  child: Ink.image(
+                                    image: AssetImage('assets/check.png'),
+                                    fit: BoxFit.cover,
+                                    width: 45,
+                                    height: 45,
+                                    child: InkWell(
+                                      onTap: () {
+                                        widget.onDelete();
+                                      },
+                                      borderRadius: BorderRadius.circular(26.0),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Datum: ${widget.columnDatum}',
-                          style: TextStyle(
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Raum: ${widget.columnRaum}',
-                          style: TextStyle(
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Uhrzeit: ${widget.columnUhrzeit}',
-                          style: TextStyle(
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
+                    ],
                   ),
                 ),
-                if (widget.columnOld == 1)
-                  Expanded(
-                    flex: 4,
-                    child: Padding(
-                      padding: EdgeInsets.only(right: 10),
-                      child: Column(
-                        children: <Widget>[
-                          const Text(
-                            'Note verfügbar',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                            ),
-                          ),
-                          const Text("gesehen"),
-                          const SizedBox(height: 8),
-                          Center(
-                            child: Ink.image(
-                              image: AssetImage('assets/check.png'),
-                              fit: BoxFit.cover,
-                              width: 45,
-                              height: 45,
-                              child: InkWell(
-                                onTap: () {
-                                  widget.onDelete();
-                                },
-                                borderRadius: BorderRadius.circular(26.0),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
