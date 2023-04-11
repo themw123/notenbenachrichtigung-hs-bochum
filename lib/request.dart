@@ -6,7 +6,7 @@ class Request {
     //künstliche ladezeit
     await Future.delayed(const Duration(seconds: 3));
 
-    await DatabaseHelper.setSubjects();
+    DatabaseHelper.setSubjects();
 
     //wenn ein fach weniger dann notification
     NotificationManager.init();
