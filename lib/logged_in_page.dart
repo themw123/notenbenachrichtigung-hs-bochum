@@ -13,14 +13,13 @@ class LoggedInPage extends StatefulWidget {
   final String username;
   final String password;
 
-
   @override
   _LoggedInPageState createState() => _LoggedInPageState();
 }
 
 class _LoggedInPageState extends State<LoggedInPage> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
-  List<Map<String, dynamic>> subjects = [];
+  Future<List<Map<String, dynamic>>>? subjects;
 
   Timer? _timer;
   Color myColor = const Color.fromRGBO(226, 0, 26, 1.0);
@@ -28,21 +27,29 @@ class _LoggedInPageState extends State<LoggedInPage> {
   @override
   initState() {
     super.initState();
+    periodicFetch();
   }
 
-
-  //es geht noch nicht für periodic, die neuen werden nicht angezeigt
-  Future<List<Map<String, dynamic>>> periodicFetch() async {
-    subjects = await fetchData();
-    _timer = Timer.periodic(const Duration(seconds: 10), (timer) async {
-      await fetchData();
+  periodicFetch() {
+    fetchData();
+    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
+      fetchData();
     });
-    return subjects;
   }
 
-  Future<List<Map<String, dynamic>>> fetchData() async {
-    await Request.getSubjectsHS();
-    return await DatabaseHelper.getSubjects();
+  fetchData() async {
+    //damit ladekreis angezeigt wird solange daten gefetcht werden
+    setState(() {
+      subjects = null;
+    });
+
+    await Request.setSubjectsHS();
+
+    if (mounted) {
+      setState(() {
+        subjects = DatabaseHelper.getSubjects();
+      });
+    }
   }
 
   /*
@@ -53,9 +60,8 @@ class _LoggedInPageState extends State<LoggedInPage> {
   }
   */
 
-
   void removeSubject(int index) {
-    final item = subjects.removeAt(index);
+    //final item = subjects.removeAt(index);
     /*
     _listKey.currentState?.removeItem(index, (context, animation) => SubjectWidget(
       columnSubject: subjects[index].values.elementAt(1),
@@ -68,7 +74,6 @@ class _LoggedInPageState extends State<LoggedInPage> {
     ));
     */
   }
-
 
   @override
   void dispose() {
@@ -94,7 +99,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
                 MaterialPageRoute(
                     builder: (BuildContext context) =>
                         MyApp(isLoggedIn: false, username: "", password: "")),
-                    (route) => false,
+                (route) => false,
               );
             },
             icon: Image.asset('assets/logout.png'),
@@ -122,8 +127,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
                   style: TextStyle(
                       fontSize: 20.0,
                       fontWeight: FontWeight.bold,
-                      color: myColor
-                  ),
+                      color: myColor),
                 ),
               ),
             ),
@@ -145,16 +149,21 @@ class _LoggedInPageState extends State<LoggedInPage> {
                     borderRadius: BorderRadius.circular(20.0),
                   ),
                   child: FutureBuilder<List<Map<String, dynamic>>>(
-                    future: periodicFetch(),
+                    future: subjects,
+                    //der key ist dazu da, damit setState(subjects=null) auch funktioniert
+                    key: ValueKey(subjects),
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
+                      if (snapshot.connectionState == ConnectionState.waiting ||
+                          snapshot.data == null) {
                         return const Center(child: CircularProgressIndicator());
                       } else if (snapshot.hasError) {
                         return Center(
-                            child: Text('Fehler beim Laden der Daten: ${snapshot.error}')
-                        );
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Center(child: Text('Keine Daten vorhanden'));
+                            child: Text(
+                                'Fehler beim Laden der Daten: ${snapshot.error}'));
+                      } else if (snapshot.data!.isEmpty) {
+                        return const Center(
+                            child: Text(
+                                'Es gibt keine Noten auf die gewartet wird'));
                       } else {
                         final subjects = snapshot.data!;
                         return AnimatedList(
@@ -165,11 +174,15 @@ class _LoggedInPageState extends State<LoggedInPage> {
                             return SizeTransition(
                               sizeFactor: animation,
                               child: SubjectWidget(
-                                columnSubject: subjects[index].values.elementAt(1),
-                                columnPruefer: subjects[index].values.elementAt(2),
-                                columnDatum: subjects[index].values.elementAt(3),
+                                columnSubject:
+                                    subjects[index].values.elementAt(1),
+                                columnPruefer:
+                                    subjects[index].values.elementAt(2),
+                                columnDatum:
+                                    subjects[index].values.elementAt(3),
                                 columnRaum: subjects[index].values.elementAt(4),
-                                columnUhrzeit: subjects[index].values.elementAt(5),
+                                columnUhrzeit:
+                                    subjects[index].values.elementAt(5),
                                 columnOld: subjects[index].values.elementAt(6),
                                 onDelete: () => removeSubject(index),
                               ),

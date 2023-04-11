@@ -17,9 +17,7 @@ class DatabaseHelper {
 
   static const columnOld = "old";
 
-
   static List<List<dynamic>> subjects = [];
-
 
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
@@ -33,8 +31,7 @@ class DatabaseHelper {
     return _database;
   }
 
-
-  _init() async{
+  _init() async {
     return await openDatabase(
       join(await getDatabasesPath(), _databaseName),
       onCreate: _onCreate,
@@ -72,16 +69,16 @@ class DatabaseHelper {
   static Future<List<Map<String, dynamic>>> getSubjects() async {
     final db = await instance.database;
 
-    List<Map<String, dynamic>> rowsOld = await db!.query(DatabaseHelper.tableNotenOld);
-    List<Map<String, dynamic>> rows = await db!.query(DatabaseHelper.tableNoten);
+    List<Map<String, dynamic>> rowsOld =
+        await db!.query(DatabaseHelper.tableNotenOld);
+    List<Map<String, dynamic>> rows =
+        await db!.query(DatabaseHelper.tableNoten);
 
     List<Map<String, dynamic>> subjects = [];
     subjects.addAll(rowsOld);
     subjects.addAll(rows);
 
     return subjects;
-
-
   }
 
   static Future<void> setSubjects() async {
@@ -118,14 +115,12 @@ class DatabaseHelper {
     await db!.insert(tableNoten, row2);
 
     await db!.insert(tableNotenOld, row3);
-
   }
 
   static Future<void> removeAllSubjects() async {
     Database? db = await instance.database;
     await db!.delete(DatabaseHelper.tableNoten);
     await db!.delete(DatabaseHelper.tableNotenOld);
-
   }
 
   static Future<void> deleteDatabasex() async {
@@ -180,5 +175,4 @@ class DatabaseHelper {
       whereArgs: [id],
     );
   }
-
 }
