@@ -34,9 +34,8 @@ class _SubjectWidgetState extends State<SubjectWidget> {
   @override
   Widget build(BuildContext context) {
     return SlideTransition(
-      key: ValueKey(widget.columnId),
       position: Tween<Offset>(
-        begin: const Offset(-10, 0),
+        begin: const Offset(-1, 0),
         end: Offset.zero,
       ).animate(CurvedAnimation(parent: widget.animation, curve: Curves.ease)),
       child: GestureDetector(
