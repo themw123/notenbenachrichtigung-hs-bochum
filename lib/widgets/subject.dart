@@ -1,6 +1,8 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
+import 'check.dart';
+import 'info.dart';
 
 class Subject extends StatefulWidget {
   final Map<String, dynamic> item;
@@ -53,103 +55,50 @@ class _SubjectState extends State<Subject> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 6,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 8),
-                            Text(
-                              widget.columnSubject,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Colors.grey[200],
-                              ),
-                              padding: const EdgeInsets.all(5.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Prüfer: ${widget.columnPruefer}',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Datum: ${widget.columnDatum}',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Raum: ${widget.columnRaum}',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Uhrzeit: ${widget.columnUhrzeit}',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    if (widget.columnOld == 1)
-                      Expanded(
-                        flex: 4,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 15),
-                          child: Column(
-                            children: <Widget>[
-                              const Text(
-                                'Note verfügbar',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 13,
-                                  color: Colors.green,
-                                ),
-                              ),
-                              const Text("gesehen"),
-                              const SizedBox(height: 4),
-                              Center(
-                                child: Ink.image(
-                                  image: const AssetImage('assets/check.png'),
-                                  fit: BoxFit.cover,
-                                  width: 45,
-                                  height: 45,
-                                  child: InkWell(
-                                    onTap: () {
-                                      widget.onDelete();
-                                    },
-                                    borderRadius: BorderRadius.circular(26.0),
-                                  ),
-                                ),
-                              ),
-                            ],
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          widget.columnSubject,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                  ],
+                      const SizedBox(height: 8),
+                      widget.columnOld == 1
+                          ? Row(
+                              children: [
+                                Expanded(
+                                  flex: 6,
+                                  child: Info(
+                                    columnPruefer: widget.columnPruefer,
+                                    columnDatum: widget.columnDatum,
+                                    columnRaum: widget.columnRaum,
+                                    columnUhrzeit: widget.columnUhrzeit,
+                                    width: double.infinity,
+                                  ),
+                                ),
+                                const SizedBox(
+                                    width:
+                                        5), // horizontaler Abstand von 16 Pixeln
+                                Expanded(
+                                    flex: 4,
+                                    child: Check(onDelete: widget.onDelete)),
+                              ],
+                            )
+                          : Info(
+                              columnPruefer: widget.columnPruefer,
+                              columnDatum: widget.columnDatum,
+                              columnRaum: widget.columnRaum,
+                              columnUhrzeit: widget.columnUhrzeit,
+                              width: double.infinity),
+                    ],
+                  ),
                 ),
               ),
             ),
