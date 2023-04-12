@@ -1,12 +1,14 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:notenbenachrichtigung/main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:notenbenachrichtigung/request.dart';
-import 'package:notenbenachrichtigung/subjectwidget.dart';
 
-import 'database.dart';
+import '../database.dart';
+import '../widgets/subject.dart';
 
 class LoggedInPage extends StatefulWidget {
   const LoggedInPage({Key? key, required this.username, required this.password})
@@ -15,6 +17,7 @@ class LoggedInPage extends StatefulWidget {
   final String password;
 
   @override
+  // ignore: library_private_types_in_public_api
   _LoggedInPageState createState() => _LoggedInPageState();
 }
 
@@ -35,7 +38,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
   @override
   Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
-    //wenn subjects leer ist dann request machen. weil periodic erfolgt erst nach x stunden selbst wenn neu eingeloggt oder neustart. ist nötig, damit nicht zu viele requests
+    //wenn subjects leer ist dann request machen.
     if ((await DatabaseHelper.getSubjects()).isEmpty) {
       fetchData(Request.setSubjectsHS);
     }
@@ -66,7 +69,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
 
       _listKey.currentState?.removeItem(
         index,
-        (context, animation) => SubjectWidget(
+        (context, animation) => Subject(
           item: removedSubject,
           animation: animation,
           columnId: removedSubject.values.elementAt(0),
@@ -101,12 +104,13 @@ class _LoggedInPageState extends State<LoggedInPage> {
             onPressed: () async {
               const storage = FlutterSecureStorage();
               await storage.deleteAll();
+              await DatabaseHelper.removeAllSubjects();
               await Future.delayed(const Duration(milliseconds: 300));
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        MyApp(isLoggedIn: false, username: "", password: "")),
+                    builder: (BuildContext context) => const MyApp(
+                        isLoggedIn: false, username: "", password: "")),
                 (route) => false,
               );
             },
@@ -184,7 +188,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
                           initialItemCount: subjects.length,
                           padding: const EdgeInsets.all(16.0),
                           itemBuilder: (context, index, animation) {
-                            return SubjectWidget(
+                            return Subject(
                               item: subjects[index],
                               animation: animation,
                               columnId: subjects[index].values.elementAt(0),

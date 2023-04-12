@@ -1,11 +1,15 @@
+// ignore_for_file: use_build_context_synchronously, deprecated_member_use
+
 import 'package:flutter/material.dart';
-import 'logged_in_page.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
+import 'logged_in_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
   @override
+  // ignore: library_private_types_in_public_api
   _LoginPageState createState() => _LoginPageState();
 }
 
@@ -18,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
     final String username = _usernameController.text;
     final String password = _passwordController.text;
 
-    final storage = FlutterSecureStorage();
+    const storage = FlutterSecureStorage();
     storage.write(key: 'isLoggedIn', value: "true");
     storage.write(key: 'username', value: username);
     storage.write(key: 'password', value: password);

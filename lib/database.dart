@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -71,8 +73,7 @@ class DatabaseHelper {
 
     List<Map<String, dynamic>> rowsOld =
         await db!.query(DatabaseHelper.tableNotenOld);
-    List<Map<String, dynamic>> rows =
-        await db!.query(DatabaseHelper.tableNoten);
+    List<Map<String, dynamic>> rows = await db.query(DatabaseHelper.tableNoten);
 
     List<Map<String, dynamic>> subjects = [];
     subjects.addAll(rowsOld);
@@ -94,7 +95,7 @@ class DatabaseHelper {
     };
 
     Map<String, dynamic> row2 = {
-      DatabaseHelper.columnSubject: 'testFach2',
+      DatabaseHelper.columnSubject: 'Digitalisierung im industrielen Umfeld',
       DatabaseHelper.columnPruefer: '***REMOVED***',
       DatabaseHelper.columnDatum: '19.08.23',
       DatabaseHelper.columnRaum: 'H7',
@@ -109,7 +110,7 @@ class DatabaseHelper {
   static Future<void> removeAllSubjects() async {
     Database? db = await instance.database;
     await db!.delete(DatabaseHelper.tableNoten);
-    await db!.delete(DatabaseHelper.tableNotenOld);
+    await db.delete(DatabaseHelper.tableNotenOld);
   }
 
   static Future<void> deleteDatabasex() async {

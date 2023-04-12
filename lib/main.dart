@@ -1,10 +1,11 @@
+// ignore_for_file: prefer_if_null_operators
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:notenbenachrichtigung/database.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'login_page.dart';
-import 'logged_in_page.dart';
+import 'pages/login_page.dart';
+import 'pages/logged_in_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,12 +15,12 @@ void main() async {
   bool isLoggedIn = value?.toLowerCase() == 'true';
 
   value = await storage.read(key: 'username');
-  String username = value != null ? value as String : '';
+  String username = value != null ? value : '';
 
   value = await storage.read(key: 'password');
-  String password = value != null ? value as String : '';
+  String password = value != null ? value : '';
 
-  await DatabaseHelper.removeAllSubjects();
+  //await DatabaseHelper.removeAllSubjects();
   //await DatabaseHelper.deleteDatabasex();
 
   //berechtigugn einfordern, dass app nicht von bsp energiesparmodus beeinträchtigt wird
@@ -76,7 +77,7 @@ class MyApp extends StatelessWidget {
       ),
       home: isLoggedIn
           ? LoggedInPage(username: username, password: password)
-          : LoginPage(),
+          : const LoginPage(),
     );
   }
 }
