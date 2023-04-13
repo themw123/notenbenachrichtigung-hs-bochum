@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../request.dart';
 import 'logged_in_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -22,19 +23,22 @@ class _LoginPageState extends State<LoginPage> {
     final String username = _usernameController.text;
     final String password = _passwordController.text;
 
-    const storage = FlutterSecureStorage();
-    storage.write(key: 'isLoggedIn', value: "true");
-    storage.write(key: 'username', value: username);
-    storage.write(key: 'password', value: password);
+    bool login = await Request.login();
 
-    await Future.delayed(const Duration(milliseconds: 300));
-    // Weiterleitung zur LoggedInPage
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-          builder: (context) =>
-              LoggedInPage(username: username, password: password)),
-    );
+    if (login) {
+      const storage = FlutterSecureStorage();
+      storage.write(key: 'isLoggedIn', value: "true");
+      storage.write(key: 'username', value: username);
+      storage.write(key: 'password', value: password);
+
+      // Weiterleitung zur LoggedInPage
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                LoggedInPage(username: username, password: password)),
+      );
+    }
   }
 
   @override
