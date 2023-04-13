@@ -1,4 +1,3 @@
-import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' show parse;
 import 'notification.dart';
 import 'database.dart';
@@ -20,8 +19,11 @@ class Request {
     return subjects;
   }
 
-  static Future<bool> login() async {
-    bool login = true;
+  static Future<bool> login(String username, String password) async {
+    /*
+    await Future.delayed(const Duration(seconds: 3));
+    return false;
+    */
 
     final headers = {
       'User-Agent':
@@ -34,8 +36,8 @@ class Request {
     var response = await Requests.get(url);
     // Login...
     Map<String, String> payload = {
-      "asdf": "***REMOVED***",
-      "fdsa": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "asdf": username,
+      "fdsa": password,
       "name": "submit"
     };
     url =
@@ -77,10 +79,6 @@ class Request {
       return Future.value(false);
     }
 
-    //...hier weiter machen morgen
-
-    return login;
+    return Future.value(true);
   }
-
-  static Future<void> xx() async {}
 }
