@@ -14,14 +14,14 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-bool login = true;
-bool loading = false;
-bool button = true;
-
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  late Request request;
+  bool login = true;
+  bool loading = false;
+  bool button = true;
 
   void _submitForm() async {
     FocusManager.instance.primaryFocus?.unfocus();
@@ -34,7 +34,8 @@ class _LoginPageState extends State<LoginPage> {
     final String username = _usernameController.text;
     final String password = _passwordController.text;
 
-    bool success = await Request.login(username, password);
+    request = Request(username, password);
+    bool success = await request.login();
     setState(() {
       loading = false;
     });
