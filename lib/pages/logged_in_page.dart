@@ -24,6 +24,7 @@ class LoggedInPage extends StatefulWidget {
 class _LoggedInPageState extends State<LoggedInPage> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   Future<List<Map<String, dynamic>>>? subjects;
+  late Request request;
 
   Timer? _timer;
   Color myColor = const Color.fromRGBO(226, 0, 26, 1.0);
@@ -31,6 +32,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
   @override
   initState() {
     super.initState();
+    request = Request(widget.username, widget.password);
     periodicFetch();
   }
 
@@ -40,7 +42,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
     super.didChangeDependencies();
     //wenn subjects leer ist dann request machen.
     if ((await DatabaseHelper.getSubjects()).isEmpty) {
-      fetchData(Request.setSubjectsHS);
+      fetchData(request.subjects);
     }
   }
 
@@ -49,7 +51,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
     fetchData(DatabaseHelper.getSubjects);
     //daten periodisch von hs bochum holen
     _timer = Timer.periodic(const Duration(minutes: 5), (timer) {
-      fetchData(Request.setSubjectsHS);
+      fetchData(request.subjects);
     });
   }
 
