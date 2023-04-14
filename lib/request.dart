@@ -4,22 +4,39 @@ import 'database.dart';
 import 'package:requests/requests.dart';
 
 class Request {
-  static Future<List<Map<String, dynamic>>> setSubjectsHS() async {
+  dynamic asi;
+  String? username;
+  String? password;
+  static final Request _singleton = Request._internal();
+
+  factory Request(String username, String password) {
+    _singleton.username = username;
+    _singleton.password = password;
+    return _singleton;
+  }
+
+  Request._internal();
+
+  Future<List<Map<String, dynamic>>> subjects() async {
     //künstliche ladezeit
-    await Future.delayed(const Duration(seconds: 3));
+    //await Future.delayed(const Duration(seconds: 3));
 
-    await DatabaseHelper.setSubjects();
-
-    //wenn ein fach weniger dann notification
+    bool success = await login();
     NotificationManager.init();
+    if (!success) {
+      NotificationManager.showNotification("Test Notification",
+          "Die Noten konnten nicht aktualisiert werden. Login fehlgeschlagen. ");
+      return await DatabaseHelper.getSubjects();
+    }
+    //!!!!!!!!!!hier subjects von hs bochum holen!!!!!!!!!!!!!!!!!!
+    await DatabaseHelper.setSubjects();
     NotificationManager.showNotification(
         "Test Notification", "This is a test notification, !!!!!!!!");
-
     var subjects = await DatabaseHelper.getSubjects();
     return subjects;
   }
 
-  static Future<bool> login(String username, String password) async {
+  Future<bool> login() async {
     /*
     await Future.delayed(const Duration(seconds: 3));
     return false;
@@ -36,8 +53,8 @@ class Request {
     var response = await Requests.get(url);
     // Login...
     Map<String, String> payload = {
-      "asdf": username,
-      "fdsa": password,
+      "asdf": username!,
+      "fdsa": password!,
       "name": "submit"
     };
     url =
@@ -64,7 +81,6 @@ class Request {
     url =
         'https://studonline.hs-bochum.de/qisserver/pages/cs/sys/portal/hisinoneIframePage.faces?id=info_angemeldete_pruefungen&navigationPosition=hisinoneMeinStudium%2Cinfo_angemeldete_pruefungen&recordRequest=true';
     response = await Requests.get(url, headers: headers);
-    dynamic asi;
     try {
       var document = parse(response.body);
       var iframe = document.getElementsByTagName('iframe').first;
