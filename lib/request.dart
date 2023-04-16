@@ -1,19 +1,16 @@
-import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
+
+import 'package:http/http.dart';
 
 import 'package:html/parser.dart' show parse;
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+
 import 'notification.dart';
 import 'database.dart';
-import 'package:requests/requests.dart';
 
 class Request {
-  final headers = {
-    'Connection': 'keep-alive',
-    'Accept': "*/*",
-    'User-Agent':
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
-  };
   dynamic asi;
   String? username;
   String? password;
@@ -41,34 +38,6 @@ class Request {
     //!!!!!!!!!!hier subjects von hs bochum holen!!!!!!!!!!!!!!!!!!
 
     //cookie setzen
-    //diesmal ohne request library. Stattdessen mit der standard http library.
-    //weil requests library keine manuellen redirects unterstützt, die nicht 300-400 als status zurückgibt.
-
-    //deshalb cookie auslesen und manuell einfügen
-    String cookies = await getCookies();
-
-    final client = HttpClient();
-    var url = Uri.parse(
-        "https://studonline.hs-bochum.de/qisserver/rds?state=redirect&sso=qis_mtknr&myre=state%253DexamsinfosStudent%2526next%253Dtree.vm%2526nextdir%253Dqispos/examsinfo/student%2526navigationPosition%253Dfunctions%2CexamsinfosStudent%2526breadcrumb%253Dinfoexams%2526topitem%253Dfunctions%2526subitem%253DexamsinfosStudent%2526asi%$asi");
-    var request = await client.getUrl(url);
-    request.followRedirects = false;
-    //request.headers.set('Cookie', cookies);
-    var response = await request.close();
-
-    while (response.isRedirect) {
-      await response.drain();
-      final location = response.headers.value(HttpHeaders.locationHeader);
-      if (location != null) {
-        url = url.resolve(location);
-        request = await client.getUrl(url);
-        // Set the body or headers as desired.
-        request.followRedirects = false;
-        response = await request.close();
-      }
-    }
-    // Do something with the final response.
-    String body = await utf8.decodeStream(response);
-
     /*
     //redirect
     url =
@@ -79,9 +48,6 @@ class Request {
     */
 
 /*
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    var test = "";
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     // asi erneut holen von Seite 'Bitte wählen Sie aus:'
     var soup = BeautifulSoup(body);
@@ -117,10 +83,33 @@ class Request {
     return false;
     */
 
+    //header obj
+    //accept wichtig sonnst geht redirect nicht!
+    var headers = {
+      "Accept": "*/*",
+      "Content-Type": "application/x-www-form-urlencoded",
+    };
+
+    var cookieJar = CookieJar(); // some dio configurations
+    var dio = Dio(BaseOptions(
+        responseType: ResponseType.plain,
+        headers: headers,
+        followRedirects: false,
+        validateStatus: (status) {
+          return status! < 500;
+        }));
+    dio.interceptors.add(CookieManager(cookieJar));
+
     // Startseite
     String url =
         "https://studonline.hs-bochum.de/qisserver/rds?state=user&type=0";
-    var response = await Requests.get(url);
+
+    var response = await dio.get(url);
+    while (response.statusCode == 302) {
+      url = response.headers.value('location')!;
+      response = await dio.get(url);
+    }
+
     // Login...
     Map<String, String> payload = {
       "asdf": username!,
@@ -129,30 +118,22 @@ class Request {
     };
     url =
         "https://studonline.hs-bochum.de/qisserver/rds?state=user&type=1&category=auth.login";
-    response = await Requests.post(
+    response = await dio.post(
       url,
-      headers: headers,
-      body: payload,
+      data: payload,
     );
 
-    //redirect muss manuell erfolgen
-    // Überprüfung auf Redirect
-    while (response.statusCode >= 300 && response.statusCode < 400) {
-      final redirectUrl = response.headers['location'];
-      if (redirectUrl == null) {
-        throw Exception(
-            'Redirect fehlgeschlagen: keine Redirect-URL gefunden.');
-      }
-      url = redirectUrl;
-      response = await Requests.get(url, headers: headers);
+    while (response.statusCode == 302) {
+      url = response.headers.value('location')!;
+      response = await dio.get(url);
     }
 
     //login checken
     url =
         'https://studonline.hs-bochum.de/qisserver/pages/cs/sys/portal/hisinoneIframePage.faces?id=info_angemeldete_pruefungen&navigationPosition=hisinoneMeinStudium%2Cinfo_angemeldete_pruefungen&recordRequest=true';
-    response = await Requests.get(url, headers: headers);
+    response = await dio.get(url);
     try {
-      var document = parse(response.body);
+      var document = parse(response.data);
       var iframe = document.getElementsByTagName('iframe').first;
       var iframeSrc = iframe.attributes['src']!;
       var start = iframeSrc.indexOf('asi%') + 4;
@@ -166,26 +147,5 @@ class Request {
     }
 
     return Future.value(true);
-  }
-
-  Future<String> getCookies() async {
-    String uri = "https://studonline.hs-bochum.de/";
-    String hostname = Requests.getHostname(uri);
-    var cookieJar = await Requests.getStoredCookies(hostname);
-    var cookiesHeader = [
-      "${cookieJar.delegate.keys.first}=${cookieJar.delegate.values.first.value}",
-      "${cookieJar.delegate.keys.elementAt(1)}=${cookieJar.delegate.values.elementAt(1).value}",
-    ];
-    return cookiesHeader.join('; ');
-  }
-
-  void updateCookie(http.Response response) {
-    String rawCookie = response.headers['set-cookie']!;
-    // ignore: unnecessary_null_comparison
-    if (rawCookie != null) {
-      int index = rawCookie.indexOf(';');
-      headers['cookie'] =
-          (index == -1) ? rawCookie : rawCookie.substring(0, index);
-    }
   }
 }
