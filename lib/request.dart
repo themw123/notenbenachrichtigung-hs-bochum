@@ -1,5 +1,8 @@
+// ignore_for_file: prefer_typing_uninitialized_variables
+
 import 'dart:io';
 
+import 'package:beautiful_soup_dart/beautiful_soup.dart';
 import 'package:http/http.dart';
 
 import 'package:html/parser.dart' show parse;
@@ -14,11 +17,31 @@ class Request {
   dynamic asi;
   String? username;
   String? password;
-  static final Request _singleton = Request._internal();
 
+  static var headers;
+  static var cookieJar;
+  static var dio;
+
+  static final Request _singleton = Request._internal();
   factory Request(String username, String password) {
     _singleton.username = username;
     _singleton.password = password;
+
+    //beides wi
+    headers = {
+      "Accept": "*/*",
+      "Content-Type": "application/x-www-form-urlencoded",
+    };
+    cookieJar = CookieJar();
+    dio = Dio(BaseOptions(
+        responseType: ResponseType.plain,
+        headers: headers,
+        followRedirects: false,
+        validateStatus: (status) {
+          return status! < 500;
+        }));
+    dio.interceptors.add(CookieManager(cookieJar));
+
     return _singleton;
   }
 
@@ -38,24 +61,23 @@ class Request {
     //!!!!!!!!!!hier subjects von hs bochum holen!!!!!!!!!!!!!!!!!!
 
     //cookie setzen
-    /*
-    //redirect
-    url =
+    var url =
         'https://studonline.hs-bochum.de/qisserver/rds?state=redirect&sso=qis_mtknr&myre=state%253DexamsinfosStudent%2526next%253Dtree.vm%2526nextdir%253Dqispos/examsinfo/student%2526navigationPosition%253Dfunctions%2CexamsinfosStudent%2526breadcrumb%253Dinfoexams%2526topitem%253Dfunctions%2526subitem%253DexamsinfosStudent%2526asi%$asi';
 
-    response = await Requests.get(url, headers: headers);
-    //redirect
-    */
-
-/*
+    var response = await dio.get(url);
+    while (response.statusCode == 302) {
+      url = response.headers.value('location')!;
+      response = await dio.get(url);
+    }
 
     // asi erneut holen von Seite 'Bitte wählen Sie aus:'
-    var soup = BeautifulSoup(body);
+    var soup = BeautifulSoup(response.data);
     var pElement = soup.find('p', string: 'Bitte wählen Sie aus:');
     var parentElement = pElement?.parent;
     var action = parentElement?['action'];
-    var start = action?.indexOf('asi=') ?? 0 + 4;
-    asi = action?.substring(start, action.length);
+    // ignore: prefer_interpolation_to_compose_strings
+    int? start = action?.indexOf('asi=');
+    asi = action?.substring(start! + 4, action.length);
 
     if (asi == null || asi == '') {
       NotificationManager.showNotification("Test Notification",
@@ -63,12 +85,13 @@ class Request {
       return await DatabaseHelper.getSubjects();
     }
 
-    // noten
+    // noten holen
     url =
-        'https://std-info.hs-bochum.de/qisserver/rds?state=examsinfosStudent&next=list.vm&nextdir=qispos/examsinfo/student&createInfos=Y&struct=auswahlBaum&nodeID=auswahlBaum|abschluss%3Aabschl%3D84%2Cstgnr%3D1&expand=1&asi=$asi';
-    response = await Requests.get(url);
-    var pruefungen = response.body;
-  */
+        'https://std-info.hs-bochum.de/qisserver/rds?state=examsinfosStudent&next=list.vm&nextdir=qispos/examsinfo/student&createInfos=Y&struct=auswahlBaum&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D84%2Cstgnr%3D1&expand=1&asi=$asi';
+    response = await dio.get(url);
+
+    var pruefungen = response.data;
+
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     await DatabaseHelper.setSubjects();
     NotificationManager.showNotification(
@@ -82,23 +105,6 @@ class Request {
     await Future.delayed(const Duration(seconds: 3));
     return false;
     */
-
-    //header obj
-    //accept wichtig sonnst geht redirect nicht!
-    var headers = {
-      "Accept": "*/*",
-      "Content-Type": "application/x-www-form-urlencoded",
-    };
-
-    var cookieJar = CookieJar(); // some dio configurations
-    var dio = Dio(BaseOptions(
-        responseType: ResponseType.plain,
-        headers: headers,
-        followRedirects: false,
-        validateStatus: (status) {
-          return status! < 500;
-        }));
-    dio.interceptors.add(CookieManager(cookieJar));
 
     // Startseite
     String url =
