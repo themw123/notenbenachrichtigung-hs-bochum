@@ -36,9 +36,6 @@ class _LoginPageState extends State<LoginPage> {
 
     request = Request(username, password);
     bool success = await request.login();
-    setState(() {
-      loading = false;
-    });
 
     if (success) {
       const storage = FlutterSecureStorage();
@@ -47,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
       storage.write(key: 'password', value: password);
 
       // Weiterleitung zur LoggedInPage
-      Navigator.pushReplacement(
+      await Navigator.pushReplacement(
         context,
         MaterialPageRoute(
             builder: (context) =>
@@ -58,8 +55,8 @@ class _LoginPageState extends State<LoginPage> {
         login = false;
       });
     }
-
     setState(() {
+      loading = false;
       button = true;
     });
   }
