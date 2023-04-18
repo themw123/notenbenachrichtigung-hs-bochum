@@ -107,7 +107,6 @@ class _LoggedInPageState extends State<LoggedInPage> {
               const storage = FlutterSecureStorage();
               await storage.deleteAll();
               await DatabaseHelper.removeAllSubjects();
-              await Future.delayed(const Duration(milliseconds: 300));
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
