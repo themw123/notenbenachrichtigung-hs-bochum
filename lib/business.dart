@@ -8,7 +8,7 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'notification.dart';
 import 'database.dart';
 
-class Request {
+class Business {
   dynamic asi;
   String? username;
   String? password;
@@ -17,8 +17,8 @@ class Request {
   static var cookieJar;
   static var dio;
 
-  static final Request _singleton = Request._internal();
-  factory Request(String username, String password) {
+  static final Business _singleton = Business._internal();
+  factory Business(String username, String password) {
     _singleton.username = username;
     _singleton.password = password;
 
@@ -40,7 +40,7 @@ class Request {
     return _singleton;
   }
 
-  Request._internal();
+  Business._internal();
 
   Future<List<Map<String, dynamic>>> subjects() async {
     //künstliche ladezeit

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../request.dart';
+import '../Business.dart';
 import 'logged_in_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -18,7 +18,7 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  late Request request;
+  late Business business;
   bool login = true;
   bool loading = false;
   bool button = true;
@@ -34,8 +34,8 @@ class _LoginPageState extends State<LoginPage> {
     final String username = _usernameController.text;
     final String password = _passwordController.text;
 
-    request = Request(username, password);
-    bool success = await request.login();
+    business = Business(username, password);
+    bool success = await business.login();
 
     if (success) {
       const storage = FlutterSecureStorage();
