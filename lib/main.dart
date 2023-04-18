@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'database.dart';
 import 'pages/not_logged_in_page.dart';
 import 'pages/logged_in_page.dart';
 

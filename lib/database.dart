@@ -69,11 +69,17 @@ class DatabaseHelper {
   }
 
   static Future<List<Map<String, dynamic>>> getSubjects() async {
-    final db = await instance.database;
+    Database? db = await instance.database;
 
     List<Map<String, dynamic>> rowsOld =
-        await db!.query(DatabaseHelper.tableNotenOld);
-    List<Map<String, dynamic>> rows = await db.query(DatabaseHelper.tableNoten);
+        (await db!.query(DatabaseHelper.tableNotenOld))
+            .map((row) => Map<String, dynamic>.from(row))
+            .toList();
+
+    List<Map<String, dynamic>> rows =
+        (await db!.query(DatabaseHelper.tableNoten))
+            .map((row) => Map<String, dynamic>.from(row))
+            .toList();
 
     List<Map<String, dynamic>> subjects = [];
     subjects.addAll(rowsOld);
@@ -82,14 +88,15 @@ class DatabaseHelper {
     return subjects;
   }
 
-  static Future<void> setSubjects(List<Map<String, dynamic>> subjects) async {
+  static Future<void> setSubjects(
+      table, List<Map<String, dynamic>> subjects) async {
     Database? db = await instance.database;
 
     for (Map<String, dynamic> subject in subjects) {
-      await db!.insert(tableNoten, subject);
+      await db!.insert(table, subject);
     }
 
-/*
+    /*
     Map<String, dynamic> row1 = {
       DatabaseHelper.columnSubject: 'testFach1',
       DatabaseHelper.columnPruefer: 'Merchiersx',
@@ -110,7 +117,7 @@ class DatabaseHelper {
 
     await db!.insert(tableNoten, row1);
     await db.insert(tableNotenOld, row2);
-*/
+    */
   }
 
   static Future<void> removeAllSubjects() async {
