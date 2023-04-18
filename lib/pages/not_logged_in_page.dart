@@ -35,7 +35,8 @@ class _LoginPageState extends State<LoginPage> {
     final String password = _passwordController.text;
 
     request = Request(username, password);
-    bool success = await request.login();
+    //bool success = await request.login();
+    bool success = true;
     setState(() {
       loading = false;
     });
