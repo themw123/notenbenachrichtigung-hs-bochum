@@ -1,10 +1,5 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
-
-import 'dart:io';
-
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
-import 'package:http/http.dart';
-
 import 'package:html/parser.dart' show parse;
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
@@ -27,7 +22,7 @@ class Request {
     _singleton.username = username;
     _singleton.password = password;
 
-    //beides wi
+    //beides wichtig!
     headers = {
       "Accept": "*/*",
       "Content-Type": "application/x-www-form-urlencoded",
@@ -51,7 +46,11 @@ class Request {
     //künstliche ladezeit
     //await Future.delayed(const Duration(seconds: 3));
 
-    bool success = await login();
+    //!!!!!!!!!!!!!!!!!!!!!!wieder einschalten!!!!!!!!!!!!!!!!!!!!!!
+    //bool success = await login();
+    bool success = true;
+    //!!!!!!!!!!!!!!!!!!!!!!wieder einschalten!!!!!!!!!!!!!!!!!!!!!!
+
     NotificationManager.init();
     if (!success) {
       NotificationManager.showNotification("Test Notification",
@@ -60,6 +59,7 @@ class Request {
     }
     //!!!!!!!!!!hier subjects von hs bochum holen!!!!!!!!!!!!!!!!!!
 
+    /*
     //cookie setzen
     var url =
         'https://studonline.hs-bochum.de/qisserver/rds?state=redirect&sso=qis_mtknr&myre=state%253DexamsinfosStudent%2526next%253Dtree.vm%2526nextdir%253Dqispos/examsinfo/student%2526navigationPosition%253Dfunctions%2CexamsinfosStudent%2526breadcrumb%253Dinfoexams%2526topitem%253Dfunctions%2526subitem%253DexamsinfosStudent%2526asi%$asi';
@@ -91,13 +91,64 @@ class Request {
     response = await dio.get(url);
 
     var pruefungen = response.data;
+    */
+    List<Map<String, dynamic>> subjects = [];
+    var html =
+        '***REMOVED***';
+    var document = parse(html);
+    var tables = document.getElementsByTagName('table');
+    var secondTable = tables[1];
+    final trs = secondTable.querySelectorAll('tr');
+    int counter = 0;
+    for (var tr in trs) {
+      if (counter > 1) {
+        final tds = tr.querySelectorAll('td');
+        var subject = tds[1].text;
+        var pruefer = tds[2].text;
+        var datum = tds[5].text;
+        var raum = tds[6].text;
+        var uhrzeit = tds[7].text;
 
+        subjects.add({
+          DatabaseHelper.columnSubject: subject,
+          DatabaseHelper.columnPruefer: pruefer,
+          DatabaseHelper.columnDatum: datum,
+          DatabaseHelper.columnRaum: raum,
+          DatabaseHelper.columnUhrzeit: uhrzeit,
+          DatabaseHelper.columnOld: 0,
+        });
+      }
+      counter++;
+    }
+    List<Map<String, dynamic>> subjectsOld = await DatabaseHelper.getSubjects();
+    var newGrades = compare(subjects, subjectsOld);
+    String newGradesText = "";
+    String text = "Note";
+    for (var newGrade in newGrades!) {
+      newGradesText += newGrade['subject'];
+    }
+    if (newGrades.isNotEmpty) {
+      if (newGrades.length > 1) {
+        text = "Noten";
+      }
+      NotificationManager.showNotification(
+          "Neue $text erhalten!", "Du hast neue $text in: $newGradesText .");
+    }
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    await DatabaseHelper.setSubjects();
-    NotificationManager.showNotification(
-        "Test Notification", "This is a test notification, !!!!!!!!");
-    var subjects = await DatabaseHelper.getSubjects();
-    return subjects;
+    //ergänze noch: wenn neue note in table noten old speichern
+    await DatabaseHelper.setSubjects(subjects);
+    return await DatabaseHelper.getSubjects();
+  }
+
+  List<Map<String, dynamic>>? compare(List<Map<String, dynamic>> subjects,
+      List<Map<String, dynamic>> subjectsOld) {
+    List<Map<String, dynamic>> newGrades = [];
+    for (var subjectOld in subjectsOld) {
+      if (!subjects.contains(subjectOld)) {
+        newGrades.add(subjectOld);
+      }
+    }
+    return newGrades;
   }
 
   Future<bool> login() async {

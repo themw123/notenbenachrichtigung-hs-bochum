@@ -82,9 +82,14 @@ class DatabaseHelper {
     return subjects;
   }
 
-  static Future<void> setSubjects() async {
+  static Future<void> setSubjects(List<Map<String, dynamic>> subjects) async {
     Database? db = await instance.database;
-    // row to insert
+
+    for (Map<String, dynamic> subject in subjects) {
+      await db!.insert(tableNoten, subject);
+    }
+
+/*
     Map<String, dynamic> row1 = {
       DatabaseHelper.columnSubject: 'testFach1',
       DatabaseHelper.columnPruefer: '***REMOVED***',
@@ -105,6 +110,7 @@ class DatabaseHelper {
 
     await db!.insert(tableNoten, row1);
     await db.insert(tableNotenOld, row2);
+*/
   }
 
   static Future<void> removeAllSubjects() async {
