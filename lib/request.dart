@@ -55,7 +55,6 @@ class Request {
       return await DatabaseHelper.getSubjects();
     }
 
-    /*
     //!!!!!!!!!!hier subjects von hs bochum holen!!!!!!!!!!!!!!!!!!
     dynamic html = await subjectRequest();
     if (html == false) {
@@ -64,11 +63,12 @@ class Request {
       return await DatabaseHelper.getSubjects();
     }
     //!!!!!!!!!!hier subjects von hs bochum holen!!!!!!!!!!!!!!!!!!
-    */
 
     //simulieren
+    /*
     dynamic html =
         '***REMOVED***';
+    */
 
     var document = parse(html);
     var tables = document.getElementsByTagName('table');
@@ -79,11 +79,11 @@ class Request {
     for (var tr in trs) {
       if (counter > 1) {
         final tds = tr.querySelectorAll('td');
-        var subject = tds[1].text;
-        var pruefer = tds[2].text;
-        var datum = tds[5].text;
-        var raum = tds[6].text;
-        var uhrzeit = tds[7].text;
+        var subject = tds[1].text.trim();
+        var pruefer = tds[2].text.trim().isEmpty ? "-" : tds[2].text;
+        var datum = tds[5].text.trim().isEmpty ? "-" : tds[5].text;
+        var raum = tds[6].text.trim().isEmpty ? "-" : tds[6].text;
+        var uhrzeit = tds[7].text.trim().isEmpty ? "-" : tds[7].text;
 
         subjects.add({
           DatabaseHelper.columnSubject: subject,
@@ -190,10 +190,11 @@ class Request {
   }
 
   Future<bool> login() async {
+    /*
     await Future.delayed(const Duration(seconds: 3));
     return Future.value(true);
+    */
 
-    /*
     // Startseite
     String url =
         "https://studonline.hs-bochum.de/qisserver/rds?state=user&type=0";
@@ -241,6 +242,5 @@ class Request {
     }
 
     return Future.value(true);
-    */
   }
 }
