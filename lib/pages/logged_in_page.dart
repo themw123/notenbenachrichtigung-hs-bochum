@@ -50,7 +50,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
 
   periodicFetch() {
     //daten periodisch von hs bochum holen
-    _timer = Timer.periodic(const Duration(minutes: 5), (timer) {
+    _timer = Timer.periodic(const Duration(minutes: 60), (timer) {
       fetchData(request.subjects);
     });
   }
@@ -176,7 +176,10 @@ class _LoggedInPageState extends State<LoggedInPage> {
                           child: SizedBox(
                             width: 200, // adjust the width as needed
                             child: Text(
+                              /*
                               'Es gibt keine Noten auf die gewartet wird',
+                              */
+                              "",
                               textAlign: TextAlign
                                   .center, // center the text within the container
                             ),
