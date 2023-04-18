@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:notenbenachrichtigung/main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:notenbenachrichtigung/request.dart';
+import 'package:notenbenachrichtigung/Business.dart';
 
 import '../database.dart';
 import '../widgets/subject.dart';
@@ -24,7 +24,7 @@ class LoggedInPage extends StatefulWidget {
 class _LoggedInPageState extends State<LoggedInPage> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   Future<List<Map<String, dynamic>>>? subjects;
-  late Request request;
+  late Business business;
 
   Timer? _timer;
   Color myColor = const Color.fromRGBO(226, 0, 26, 1.0);
@@ -32,7 +32,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
   @override
   initState() {
     super.initState();
-    request = Request(widget.username, widget.password);
+    business = Business(widget.username, widget.password);
     periodicFetch();
   }
 
@@ -44,14 +44,14 @@ class _LoggedInPageState extends State<LoggedInPage> {
     fetchData(DatabaseHelper.getSubjects);
     //wenn subjects leer ist dann request machen.
     if ((await DatabaseHelper.getSubjects()).isEmpty) {
-      fetchData(request.subjects);
+      fetchData(business.subjects);
     }
   }
 
   periodicFetch() {
     //daten periodisch von hs bochum holen
     _timer = Timer.periodic(const Duration(minutes: 60), (timer) {
-      fetchData(request.subjects);
+      fetchData(business.subjects);
     });
   }
 
