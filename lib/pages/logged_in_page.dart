@@ -50,7 +50,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
 
   periodicFetch() {
     //daten periodisch von hs bochum holen
-    _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
+    _timer = Timer.periodic(const Duration(minutes: 5), (timer) {
       fetchData(request.subjects);
     });
   }
