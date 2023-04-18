@@ -40,6 +40,8 @@ class _LoggedInPageState extends State<LoggedInPage> {
   @override
   Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
+    //subjects aus datenbank holen
+    fetchData(DatabaseHelper.getSubjects);
     //wenn subjects leer ist dann request machen.
     if ((await DatabaseHelper.getSubjects()).isEmpty) {
       fetchData(request.subjects);
@@ -47,10 +49,8 @@ class _LoggedInPageState extends State<LoggedInPage> {
   }
 
   periodicFetch() {
-    //subjects aus datenbank holen
-    fetchData(DatabaseHelper.getSubjects);
     //daten periodisch von hs bochum holen
-    _timer = Timer.periodic(const Duration(minutes: 5), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
       fetchData(request.subjects);
     });
   }
