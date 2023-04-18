@@ -77,7 +77,7 @@ class DatabaseHelper {
             .toList();
 
     List<Map<String, dynamic>> rows =
-        (await db!.query(DatabaseHelper.tableNoten))
+        (await db.query(DatabaseHelper.tableNoten))
             .map((row) => Map<String, dynamic>.from(row))
             .toList();
 
