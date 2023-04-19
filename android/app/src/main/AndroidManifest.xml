@@ -2,6 +2,9 @@
     package="com.example.notenbenachrichtigung">
 
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+
     <application
         android:label="Notenbenachrichtigung"
         android:name="${applicationName}"
