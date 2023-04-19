@@ -3,9 +3,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:notenbenachrichtigung/main.dart';
+import 'package:Notenbenachrichtigung/main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:notenbenachrichtigung/Business.dart';
+import 'package:Notenbenachrichtigung/Business.dart';
 
 import '../database.dart';
 import '../widgets/subject.dart';
