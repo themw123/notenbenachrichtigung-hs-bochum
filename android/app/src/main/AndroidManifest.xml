@@ -38,5 +38,8 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data
+            android:name="grade"
+            android:resource="@drawable/grade" />
     </application>
 </manifest>
