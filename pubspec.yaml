@@ -38,7 +38,6 @@ dependencies:
   sqflite: ^2.2.6
   flutter_svg: ^2.0.4
   html: ^0.15.2
-  requests: ^4.8.0-alpha.0
   beautiful_soup_dart: ^0.3.0
   cupertino_icons: ^1.0.2
   cookie_jar: ^4.0.1
