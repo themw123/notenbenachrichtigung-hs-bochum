@@ -3,12 +3,23 @@
 <plist version="1.0">
 	<dict>
 
+		<!-- Background Processing -->
 		<key>UIBackgroundModes</key>
 		<array>
 			<string>processing</string>
 		</array>
+		<!-- Background Fetching -->
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>fetch</string>
+		</array>
 
+		<key>BGTaskSchedulerPermittedIdentifiers</key>
+		<array>
+			<string>meintask</string>
+		</array>
 
+		<!-- Internet ?-->
 		<key>NSAppTransportSecurity</key>
 		<dict>
 			<key>NSAllowsArbitraryLoads</key>
