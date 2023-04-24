@@ -135,8 +135,6 @@ class Business {
     await DatabaseHelper.removeAllSubjects();
     await DatabaseHelper.setSubjects(DatabaseHelper.tableNoten, subjects);
     await DatabaseHelper.setSubjects(DatabaseHelper.tableNotenOld, newGrades);
-    //stream aktualisieren
-    await StreamControllerHelper.setSubjects();
     return Future.value(true);
   }
 
