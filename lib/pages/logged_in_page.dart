@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:Notenbenachrichtigung/main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:Notenbenachrichtigung/Business.dart';
+import 'package:workmanager/workmanager.dart';
 
 import '../database.dart';
+import '../notification.dart';
+import '../stream.dart';
 import '../widgets/subject.dart';
 
 class LoggedInPage extends StatefulWidget {
@@ -23,7 +26,7 @@ class LoggedInPage extends StatefulWidget {
 
 class _LoggedInPageState extends State<LoggedInPage> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
-  Future<List<Map<String, dynamic>>>? subjects;
+  List<Map<String, dynamic>>? subjects;
   late Business business;
 
   Timer? _timer;
@@ -33,28 +36,34 @@ class _LoggedInPageState extends State<LoggedInPage> {
   initState() {
     super.initState();
     business = Business(widget.username, widget.password);
-    periodicFetch();
+    periodicBackgroundFetch();
   }
 
   //weil async nicht geht in initState aber hiermit.
   @override
   Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
-    //subjects aus datenbank holen
-    fetchData(DatabaseHelper.getSubjects);
+
     //wenn subjects leer ist dann request machen.
     if ((await DatabaseHelper.getSubjects()).isEmpty) {
-      fetchData(business.subjects);
+      //request hs bochum und in datenbank speichern und dann in stream schreiben
+      await business.subjects();
+    } else {
+      //nur im else teil weil in business.subjects(); die stream aktuallisierung bereits erfolgt
+      await StreamControllerHelper.setSubjects();
     }
   }
 
-  periodicFetch() {
+  periodicBackgroundFetch() {
+    /*
     //daten periodisch von hs bochum holen
-    _timer = Timer.periodic(const Duration(minutes: 60), (timer) {
-      fetchData(business.subjects);
-    });
+    Workmanager().registerPeriodicTask('meintask', 'meintask',
+        frequency: const Duration(minutes: 15),
+        existingWorkPolicy: ExistingWorkPolicy.replace);
+    */
   }
 
+/*
   fetchData(Function method) {
     if (mounted) {
       setState(() {
@@ -62,30 +71,29 @@ class _LoggedInPageState extends State<LoggedInPage> {
       });
     }
   }
+*/
 
   void removeSubject(int index) {
-    subjects?.then((subjects) {
-      final removedSubject = subjects.removeAt(index);
-      final id = removedSubject.values.elementAt(0);
-      DatabaseHelper.delete(id);
+    final removedSubject = subjects!.removeAt(index);
+    final id = removedSubject.values.elementAt(0);
+    DatabaseHelper.delete(id);
 
-      _listKey.currentState?.removeItem(
-        index,
-        (context, animation) => Subject(
-          item: removedSubject,
-          animation: animation,
-          columnId: removedSubject.values.elementAt(0),
-          columnSubject: removedSubject.values.elementAt(1),
-          columnPruefer: removedSubject.values.elementAt(2),
-          columnDatum: removedSubject.values.elementAt(3),
-          columnRaum: removedSubject.values.elementAt(4),
-          columnUhrzeit: removedSubject.values.elementAt(5),
-          columnOld: removedSubject.values.elementAt(6),
-          onDelete: () => removeSubject(index),
-        ),
-        duration: const Duration(milliseconds: 500),
-      );
-    });
+    _listKey.currentState?.removeItem(
+      index,
+      (context, animation) => Subject(
+        item: removedSubject,
+        animation: animation,
+        columnId: removedSubject.values.elementAt(0),
+        columnSubject: removedSubject.values.elementAt(1),
+        columnPruefer: removedSubject.values.elementAt(2),
+        columnDatum: removedSubject.values.elementAt(3),
+        columnRaum: removedSubject.values.elementAt(4),
+        columnUhrzeit: removedSubject.values.elementAt(5),
+        columnOld: removedSubject.values.elementAt(6),
+        onDelete: () => removeSubject(index),
+      ),
+      duration: const Duration(milliseconds: 500),
+    );
   }
 
   @override
@@ -107,6 +115,7 @@ class _LoggedInPageState extends State<LoggedInPage> {
               const storage = FlutterSecureStorage();
               await storage.deleteAll();
               await DatabaseHelper.removeAllSubjects();
+              Workmanager().cancelByUniqueName("meintask");
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
@@ -161,55 +170,34 @@ class _LoggedInPageState extends State<LoggedInPage> {
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(20.0),
                   ),
-                  child: FutureBuilder<List<Map<String, dynamic>>>(
-                    future: subjects,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting ||
-                          snapshot.data == null) {
+                  child: StreamBuilder<List<Map<String, dynamic>>>(
+                    stream: StreamControllerHelper.controller.stream,
+                    builder: (BuildContext context,
+                        AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+                      if (!snapshot.hasData) {
                         return const Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Center(
-                            child: Text(
-                                'Fehler beim Laden der Daten: ${snapshot.error}'));
-                      } else if (snapshot.data!.isEmpty) {
-                        return const Center(
-                          child: SizedBox(
-                            width: 200, // adjust the width as needed
-                            child: Text(
-                              /*
-                              'Es gibt keine Noten auf die gewartet wird',
-                              */
-                              "",
-                              textAlign: TextAlign
-                                  .center, // center the text within the container
-                            ),
-                          ),
-                        );
-                      } else {
-                        final subjects = snapshot.data!;
-                        return AnimatedList(
-                          key: _listKey,
-                          initialItemCount: subjects.length,
-                          padding: const EdgeInsets.all(16.0),
-                          itemBuilder: (context, index, animation) {
-                            return Subject(
-                              item: subjects[index],
-                              animation: animation,
-                              columnId: subjects[index].values.elementAt(0),
-                              columnSubject:
-                                  subjects[index].values.elementAt(1),
-                              columnPruefer:
-                                  subjects[index].values.elementAt(2),
-                              columnDatum: subjects[index].values.elementAt(3),
-                              columnRaum: subjects[index].values.elementAt(4),
-                              columnUhrzeit:
-                                  subjects[index].values.elementAt(5),
-                              columnOld: subjects[index].values.elementAt(6),
-                              onDelete: () => removeSubject(index),
-                            );
-                          },
-                        );
                       }
+                      subjects = snapshot.data!;
+
+                      return AnimatedList(
+                        key: _listKey,
+                        initialItemCount: subjects!.length,
+                        padding: const EdgeInsets.all(16.0),
+                        itemBuilder: (context, index, animation) {
+                          return Subject(
+                            item: subjects![index],
+                            animation: animation,
+                            columnId: subjects![index].values.elementAt(0),
+                            columnSubject: subjects![index].values.elementAt(1),
+                            columnPruefer: subjects![index].values.elementAt(2),
+                            columnDatum: subjects![index].values.elementAt(3),
+                            columnRaum: subjects![index].values.elementAt(4),
+                            columnUhrzeit: subjects![index].values.elementAt(5),
+                            columnOld: subjects![index].values.elementAt(6),
+                            onDelete: () => removeSubject(index),
+                          );
+                        },
+                      );
                     },
                   ),
                 ),

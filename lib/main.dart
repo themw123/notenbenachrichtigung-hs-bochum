@@ -3,7 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:workmanager/workmanager.dart';
 
+import 'business.dart';
 import 'database.dart';
 import 'pages/not_logged_in_page.dart';
 import 'pages/logged_in_page.dart';
@@ -25,7 +27,10 @@ void main() async {
   //await DatabaseHelper.deleteDatabasex();
 
   //berechtigugn einfordern, dass app nicht von bsp energiesparmodus beeinträchtigt wird
-  requestBatteryOptimizations();
+  //requestBatteryOptimizations();
+
+  //initialisiere den background muss vor runApp erfolgen
+  await Workmanager().initialize(backgroundTask);
 
   runApp(MyApp(isLoggedIn: isLoggedIn, username: username, password: password));
 }
@@ -77,7 +82,10 @@ class MyApp extends StatelessWidget {
         primarySwatch: myCustomMaterialColor,
       ),
       home: isLoggedIn
-          ? LoggedInPage(username: username, password: password)
+          ? LoggedInPage(
+              username: username,
+              password: password,
+            )
           : const LoginPage(),
     );
   }
@@ -89,4 +97,19 @@ void requestBatteryOptimizations() async {
   } else {
     // Die Berechtigung wurde nicht gewährt, die App kann möglicherweise nicht im Hintergrund ausgeführt werden
   }
+}
+
+void backgroundTask() {
+  Workmanager().executeTask((taskName, inputData) async {
+    const storage = FlutterSecureStorage();
+    String? value = await storage.read(key: 'isLoggedIn');
+    value = await storage.read(key: 'username');
+    String username = value != null ? value : '';
+    value = await storage.read(key: 'password');
+    String password = value != null ? value : '';
+
+    Business business = Business(username, password);
+    //returnt Future.value(false) oder Future.value(true)
+    return await business.subjects();
+  });
 }

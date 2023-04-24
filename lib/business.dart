@@ -7,6 +7,7 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 
 import 'notification.dart';
 import 'database.dart';
+import 'stream.dart';
 
 class Business {
   dynamic asi;
@@ -42,33 +43,29 @@ class Business {
 
   Business._internal();
 
-  Future<List<Map<String, dynamic>>> subjects() async {
-    //künstliche ladezeit
-    //await Future.delayed(const Duration(seconds: 3));
-
+  Future<bool> subjects() async {
     bool success = await login();
 
     NotificationManager.init();
     if (!success) {
-      NotificationManager.showNotification("Test Notification",
-          "Die Noten konnten nicht aktualisiert werden. Login fehlgeschlagen. ");
-      return await DatabaseHelper.getSubjects();
+      NotificationManager.showNotification("Login fehlgeschlagen",
+          "Die Noten konnten nicht aktualisiert werden.");
+      return Future.value(false);
     }
 
+/*
     //!!!!!!!!!!hier subjects von hs bochum holen!!!!!!!!!!!!!!!!!!
     dynamic html = await subjectRequest();
     if (html == false) {
-      NotificationManager.showNotification("Test Notification",
+      NotificationManager.showNotification("Login fehlgeschlagen",
           "Die Noten konnten nicht aktualisiert werden. Zweiter Asi konnte nicht ermittelt werden.");
-      return await DatabaseHelper.getSubjects();
+      return Future.value(false);
     }
     //!!!!!!!!!!hier subjects von hs bochum holen!!!!!!!!!!!!!!!!!!
-
+*/
     //simulieren
-    /*
     dynamic html =
         '***REMOVED***';
-    */
 
     var document = parse(html);
     var tables = document.getElementsByTagName('table');
@@ -105,7 +102,7 @@ class Business {
       DatabaseHelper.columnDatum: "yx",
       DatabaseHelper.columnRaum: "xxx",
       DatabaseHelper.columnUhrzeit: "x",
-      DatabaseHelper.columnOld: 0,
+      DatabaseHelper.columnOld: 1,
     });
     */
 
@@ -138,7 +135,9 @@ class Business {
     await DatabaseHelper.removeAllSubjects();
     await DatabaseHelper.setSubjects(DatabaseHelper.tableNoten, subjects);
     await DatabaseHelper.setSubjects(DatabaseHelper.tableNotenOld, newGrades);
-    return await DatabaseHelper.getSubjects();
+    //stream aktualisieren
+    await StreamControllerHelper.setSubjects();
+    return Future.value(true);
   }
 
   Future<dynamic> subjectRequest() async {
@@ -193,11 +192,10 @@ class Business {
   }
 
   Future<bool> login() async {
-    /*
     await Future.delayed(const Duration(seconds: 3));
     return Future.value(true);
-    */
 
+    /*
     // Startseite
     String url =
         "https://studonline.hs-bochum.de/qisserver/rds?state=user&type=0";
@@ -245,5 +243,6 @@ class Business {
     }
 
     return Future.value(true);
+    */
   }
 }
