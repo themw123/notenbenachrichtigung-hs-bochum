@@ -27,7 +27,7 @@ void main() async {
   //await DatabaseHelper.deleteDatabasex();
 
   //berechtigugn einfordern, dass app nicht von bsp energiesparmodus beeinträchtigt wird
-  //requestBatteryOptimizations();
+  requestBatteryOptimizations();
 
   //initialisiere den background muss vor runApp erfolgen
   await Workmanager().initialize(backgroundTask);

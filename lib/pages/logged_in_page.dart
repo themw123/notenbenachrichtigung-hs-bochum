@@ -48,16 +48,15 @@ class _LoggedInPageState extends State<LoggedInPage> {
     if ((await DatabaseHelper.getSubjects()).isEmpty) {
       //request hs bochum und in datenbank speichern und dann in stream schreiben
       await business.subjects();
-    } else {
-      //nur im else teil weil in business.subjects(); die stream aktuallisierung bereits erfolgt
-      await StreamControllerHelper.setSubjects();
     }
+    await StreamControllerHelper.setSubjects();
   }
 
   periodicBackgroundFetch() {
     //daten periodisch von hs bochum holen
     Workmanager().registerPeriodicTask('meintask', 'meintask',
-        frequency: const Duration(minutes: 15),
+        frequency: const Duration(minutes: 60),
+        initialDelay: const Duration(minutes: 60),
         existingWorkPolicy: ExistingWorkPolicy.replace);
   }
 
