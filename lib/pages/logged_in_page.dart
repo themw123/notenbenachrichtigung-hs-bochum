@@ -55,23 +55,11 @@ class _LoggedInPageState extends State<LoggedInPage> {
   }
 
   periodicBackgroundFetch() {
-    /*
     //daten periodisch von hs bochum holen
     Workmanager().registerPeriodicTask('meintask', 'meintask',
         frequency: const Duration(minutes: 15),
         existingWorkPolicy: ExistingWorkPolicy.replace);
-    */
   }
-
-/*
-  fetchData(Function method) {
-    if (mounted) {
-      setState(() {
-        subjects = method();
-      });
-    }
-  }
-*/
 
   void removeSubject(int index) {
     final removedSubject = subjects!.removeAt(index);
