@@ -95,17 +95,16 @@ class Business {
     }
 
     //simuliere Notenbenachrichtigung.
-    /*
+/*
     subjects.add({
       DatabaseHelper.columnSubject: "xx",
       DatabaseHelper.columnPruefer: "yy",
       DatabaseHelper.columnDatum: "yx",
       DatabaseHelper.columnRaum: "xxx",
       DatabaseHelper.columnUhrzeit: "x",
-      DatabaseHelper.columnOld: 1,
+      DatabaseHelper.columnOld: 0,
     });
-    */
-
+*/
     List<Map<String, dynamic>> subjectsOld = await DatabaseHelper.getSubjects();
     var newGrades = compare(subjects, subjectsOld);
 
@@ -135,6 +134,7 @@ class Business {
     await DatabaseHelper.removeAllSubjects();
     await DatabaseHelper.setSubjects(DatabaseHelper.tableNoten, subjects);
     await DatabaseHelper.setSubjects(DatabaseHelper.tableNotenOld, newGrades);
+    await StreamControllerHelper.setSubjects();
     return Future.value(true);
   }
 
