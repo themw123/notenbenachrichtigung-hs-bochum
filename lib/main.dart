@@ -110,6 +110,6 @@ void backgroundTask() {
 
     Business business = Business(username, password);
     //returnt Future.value(false) oder Future.value(true)
-    return await business.subjects();
+    return await business.subjects(false);
   });
 }

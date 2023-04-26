@@ -7,7 +7,6 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 
 import 'notification.dart';
 import 'database.dart';
-import 'stream.dart';
 
 class Business {
   dynamic asi;
@@ -43,7 +42,7 @@ class Business {
 
   Business._internal();
 
-  Future<bool> subjects() async {
+  Future<bool> subjects(bool firstLoad) async {
     bool success = await login();
 
     NotificationManager.init();
@@ -94,17 +93,22 @@ class Business {
       counter++;
     }
 
-    //simuliere Notenbenachrichtigung.
-/*
-    subjects.add({
-      DatabaseHelper.columnSubject: "xx",
-      DatabaseHelper.columnPruefer: "yy",
-      DatabaseHelper.columnDatum: "yx",
-      DatabaseHelper.columnRaum: "xxx",
-      DatabaseHelper.columnUhrzeit: "x",
-      DatabaseHelper.columnOld: 0,
-    });
-*/
+    //simuliere Notenbenachrichtigung.!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    var now = DateTime.now();
+    var cutoff = DateTime(now.year, now.month, now.day, 22, 10);
+    bool test = now.isAfter(cutoff);
+    if (!test) {
+      subjects.add({
+        DatabaseHelper.columnSubject: "xx",
+        DatabaseHelper.columnPruefer: "yy",
+        DatabaseHelper.columnDatum: "yx",
+        DatabaseHelper.columnRaum: "xxx",
+        DatabaseHelper.columnUhrzeit: "x",
+        DatabaseHelper.columnOld: 0,
+      });
+    }
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     List<Map<String, dynamic>> subjectsOld = await DatabaseHelper.getSubjects();
     var newGrades = compare(subjects, subjectsOld);
 
@@ -118,23 +122,25 @@ class Business {
       counter++;
     }
 
-    if (newGrades.isNotEmpty) {
-      String text = "Note";
-      if (newGrades.length > 1) {
-        text = "Noten";
+    //nur wenn neue noten vorhanden sind und nicht beim ersten laden(widget build)
+    if (!firstLoad) {
+      if (newGrades.isNotEmpty) {
+        String text = "Note";
+        if (newGrades.length > 1) {
+          text = "Noten";
+        }
+        NotificationManager.showNotification(
+            "Neue $text erhalten!", newGradesText);
+      } else {
+        NotificationManager.showNotification(
+            "Fetch erfolgreich!", "aber keine neuen Noten.");
       }
-      NotificationManager.showNotification(
-          "Neue $text erhalten!", newGradesText);
-    } else {
-      NotificationManager.showNotification(
-          "Fetch erfolgreich!", "aber keine neuen Noten.");
     }
 
     //muss immer erfolgen.
     await DatabaseHelper.removeAllSubjects();
     await DatabaseHelper.setSubjects(DatabaseHelper.tableNoten, subjects);
     await DatabaseHelper.setSubjects(DatabaseHelper.tableNotenOld, newGrades);
-    await StreamControllerHelper.setSubjects();
     return Future.value(true);
   }
 
