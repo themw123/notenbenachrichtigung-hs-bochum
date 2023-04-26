@@ -9,8 +9,6 @@ import 'package:Notenbenachrichtigung/Business.dart';
 import 'package:workmanager/workmanager.dart';
 
 import '../database.dart';
-import '../notification.dart';
-import '../stream.dart';
 import '../widgets/subject.dart';
 
 class LoggedInPage extends StatefulWidget {
@@ -40,6 +38,18 @@ class _LoggedInPageState extends State<LoggedInPage>
     }
   }
 
+  Future<List<Map<String, dynamic>>> makeListNull() async {
+    List<Map<String, dynamic>> x = [];
+    return x;
+  }
+
+  Future<void> swiperefresh() async {
+    fetchData(makeListNull);
+    await business.subjects(false);
+    //returnt ein Future, es wird nicht drauf awaitet. FutureBuilder erwartet das ja auch
+    fetchData(DatabaseHelper.getSubjects);
+  }
+
   @override
   initState() {
     super.initState();
@@ -60,7 +70,7 @@ class _LoggedInPageState extends State<LoggedInPage>
     //wenn subjects leer ist dann request machen.
     if ((await DatabaseHelper.getSubjects()).isEmpty) {
       //request hs bochum und in datenbank speichern und ui refresh
-      await business.subjects(true);
+      await business.subjects(false);
     }
     //returnt ein Future, es wird nicht drauf awaitet. FutureBuilder erwartet das ja auch
     fetchData(DatabaseHelper.getSubjects);
@@ -176,53 +186,66 @@ class _LoggedInPageState extends State<LoggedInPage>
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(20.0),
                   ),
-                  child: FutureBuilder<List<Map<String, dynamic>>>(
-                    future: subjects,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting ||
-                          snapshot.data == null) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Center(
-                            child: Text(
-                                'Fehler beim Laden der Daten: ${snapshot.error}'));
-                      } else if (snapshot.data!.isEmpty) {
-                        return const Center(
-                          child: SizedBox(
-                            width: 200, // adjust the width as needed
-                            child: Text(
-                              'Es gibt keine Noten auf die gewartet wird',
-                              textAlign: TextAlign
-                                  .center, // center the text within the container
+                  child: RefreshIndicator(
+                    onRefresh: swiperefresh,
+                    child: FutureBuilder<List<Map<String, dynamic>>>(
+                      future: subjects,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                                ConnectionState.waiting ||
+                            snapshot.data == null) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        //liste lerr
+                        /*
+                        else if (snapshot.data != null &&
+                            snapshot.data!.isEmpty) {
+                          return const Center(
+                            child: SizedBox(
+                              width: 200, // adjust the width as needed
+                              child: Text(
+                                "",
+                                //'Es gibt keine Noten auf die gewartet wird',
+                                textAlign: TextAlign
+                                    .center, // center the text within the container
+                              ),
                             ),
-                          ),
-                        );
-                      } else {
-                        final subjects = snapshot.data!;
-                        return AnimatedList(
-                          key: _listKey,
-                          initialItemCount: subjects.length,
-                          padding: const EdgeInsets.all(16.0),
-                          itemBuilder: (context, index, animation) {
-                            return Subject(
-                              item: subjects[index],
-                              animation: animation,
-                              columnId: subjects[index].values.elementAt(0),
-                              columnSubject:
-                                  subjects[index].values.elementAt(1),
-                              columnPruefer:
-                                  subjects[index].values.elementAt(2),
-                              columnDatum: subjects[index].values.elementAt(3),
-                              columnRaum: subjects[index].values.elementAt(4),
-                              columnUhrzeit:
-                                  subjects[index].values.elementAt(5),
-                              columnOld: subjects[index].values.elementAt(6),
-                              onDelete: () => removeSubject(index),
-                            );
-                          },
-                        );
-                      }
-                    },
+                          );
+                          
+                        }*/
+                        else if (snapshot.hasError) {
+                          return Center(
+                              child: Text(
+                                  'Fehler beim Laden der Daten: ${snapshot.error}'));
+                        } else {
+                          final subjects = snapshot.data!;
+                          return AnimatedList(
+                            key: _listKey,
+                            initialItemCount: subjects.length,
+                            padding: const EdgeInsets.all(16.0),
+                            itemBuilder: (context, index, animation) {
+                              return Subject(
+                                item: subjects[index],
+                                animation: animation,
+                                columnId: subjects[index].values.elementAt(0),
+                                columnSubject:
+                                    subjects[index].values.elementAt(1),
+                                columnPruefer:
+                                    subjects[index].values.elementAt(2),
+                                columnDatum:
+                                    subjects[index].values.elementAt(3),
+                                columnRaum: subjects[index].values.elementAt(4),
+                                columnUhrzeit:
+                                    subjects[index].values.elementAt(5),
+                                columnOld: subjects[index].values.elementAt(6),
+                                onDelete: () => removeSubject(index),
+                              );
+                            },
+                          );
+                        }
+                      },
+                    ),
                   ),
                 ),
               ),
