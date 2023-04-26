@@ -42,7 +42,7 @@ class Business {
 
   Business._internal();
 
-  Future<bool> subjects(bool firstLoad) async {
+  Future<bool> subjects(bool notification) async {
     bool success = await login();
 
     NotificationManager.init();
@@ -95,7 +95,7 @@ class Business {
 
     //simuliere Notenbenachrichtigung.!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     var now = DateTime.now();
-    var cutoff = DateTime(now.year, now.month, now.day, 22, 10);
+    var cutoff = DateTime(now.year, now.month, now.day, 01, 45);
     bool test = now.isAfter(cutoff);
     if (!test) {
       subjects.add({
@@ -108,6 +108,7 @@ class Business {
       });
     }
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //subjects.removeRange(0, subjects.length);
 
     List<Map<String, dynamic>> subjectsOld = await DatabaseHelper.getSubjects();
     var newGrades = compare(subjects, subjectsOld);
@@ -123,7 +124,7 @@ class Business {
     }
 
     //nur wenn neue noten vorhanden sind und nicht beim ersten laden(widget build)
-    if (!firstLoad) {
+    if (notification) {
       if (newGrades.isNotEmpty) {
         String text = "Note";
         if (newGrades.length > 1) {
