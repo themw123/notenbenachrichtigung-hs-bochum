@@ -109,7 +109,6 @@ void backgroundTask() {
     String password = value != null ? value : '';
 
     Business business = Business(username, password);
-    //returnt Future.value(false) oder Future.value(true)
     return await business.subjects(true);
   });
 }
