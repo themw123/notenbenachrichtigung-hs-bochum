@@ -25,29 +25,18 @@ class LoggedInPage extends StatefulWidget {
 class _LoggedInPageState extends State<LoggedInPage>
     with WidgetsBindingObserver {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
-  Future<List<Map<String, dynamic>>>? subjects;
+  late Future<dynamic> subjects;
   late Business business;
 
   Color myColor = const Color.fromRGBO(226, 0, 26, 1.0);
 
-  fetchData(Function method) {
-    if (mounted) {
-      setState(() {
-        subjects = method();
-      });
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> makeListNull() async {
-    List<Map<String, dynamic>> x = [];
-    return x;
-  }
-
-  Future<void> swiperefresh() async {
-    fetchData(makeListNull);
-    await business.subjects(false);
-    //returnt ein Future, es wird nicht drauf awaitet. FutureBuilder erwartet das ja auch
-    fetchData(DatabaseHelper.getSubjects);
+  Future<void> swiperefresh() {
+    setState(() {
+      subjects = business.subjects(false);
+    });
+    //damit ladekreis von refreshindicator direkt verschwindet
+    //es wird ja der ladekreis von subjects angezeigt
+    return Future<void>.value();
   }
 
   @override
@@ -55,6 +44,7 @@ class _LoggedInPageState extends State<LoggedInPage>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     business = Business(widget.username, widget.password);
+    subjects = business.subjects(false);
   }
 
   @override
@@ -63,27 +53,13 @@ class _LoggedInPageState extends State<LoggedInPage>
     super.dispose();
   }
 
-  //weil async nicht geht in initState aber hiermit. ist genau wie initState. Wird nur einmal aufgerufen wenn widget gebuilded wird
-  @override
-  Future<void> didChangeDependencies() async {
-    super.didChangeDependencies();
-    //wenn subjects leer ist dann request machen.
-    if ((await DatabaseHelper.getSubjects()).isEmpty) {
-      //request hs bochum und in datenbank speichern und ui refresh
-      await business.subjects(false);
-    }
-    //returnt ein Future, es wird nicht drauf awaitet. FutureBuilder erwartet das ja auch
-    fetchData(DatabaseHelper.getSubjects);
-  }
-
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     super.didChangeAppLifecycleState(state);
     //wird immer aufgerufen wenn app in den vordergrund kommt
     if (state == AppLifecycleState.resumed) {
       Workmanager().cancelByUniqueName("meintask");
-      //returnt ein Future, es wird nicht drauf awaitet. FutureBuilder erwartet das ja auch
-      fetchData(DatabaseHelper.getSubjects);
+      subjects = DatabaseHelper.getSubjects();
     } else {
       //daten periodisch von hs bochum holen
       Workmanager().registerPeriodicTask('meintask', 'meintask',
@@ -94,7 +70,7 @@ class _LoggedInPageState extends State<LoggedInPage>
   }
 
   void removeSubject(int index) {
-    subjects?.then((subjects) {
+    subjects.then((subjects) {
       final removedSubject = subjects.removeAt(index);
       final id = removedSubject.values.elementAt(0);
       DatabaseHelper.delete(id);
@@ -188,38 +164,22 @@ class _LoggedInPageState extends State<LoggedInPage>
                   ),
                   child: RefreshIndicator(
                     onRefresh: swiperefresh,
-                    child: FutureBuilder<List<Map<String, dynamic>>>(
+                    child: FutureBuilder<dynamic>(
                       future: subjects,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
-                                ConnectionState.waiting ||
-                            snapshot.data == null) {
+                            ConnectionState.waiting) {
                           return const Center(
                               child: CircularProgressIndicator());
-                        }
-                        //liste lerr
-                        /*
-                        else if (snapshot.data != null &&
-                            snapshot.data!.isEmpty) {
-                          return const Center(
-                            child: SizedBox(
-                              width: 200, // adjust the width as needed
-                              child: Text(
-                                "",
-                                //'Es gibt keine Noten auf die gewartet wird',
-                                textAlign: TextAlign
-                                    .center, // center the text within the container
-                              ),
-                            ),
-                          );
-                          
-                        }*/
-                        else if (snapshot.hasError) {
+                        } else if (snapshot.hasError) {
                           return Center(
                               child: Text(
                                   'Fehler beim Laden der Daten: ${snapshot.error}'));
+                        } else if (snapshot.data.isEmpty) {
+                          return const Center(
+                              child: Text("Keine Noten gefunden."));
                         } else {
-                          final subjects = snapshot.data!;
+                          final subjects = snapshot.data;
                           return AnimatedList(
                             key: _listKey,
                             initialItemCount: subjects.length,

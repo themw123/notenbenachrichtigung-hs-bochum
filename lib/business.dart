@@ -42,7 +42,7 @@ class Business {
 
   Business._internal();
 
-  Future<bool> subjects(bool notification) async {
+  Future<dynamic> subjects(bool notification) async {
     bool success = await login();
 
     NotificationManager.init();
@@ -95,7 +95,7 @@ class Business {
 
     //simuliere Notenbenachrichtigung.!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     var now = DateTime.now();
-    var cutoff = DateTime(now.year, now.month, now.day, 01, 45);
+    var cutoff = DateTime(now.year, now.month, now.day, 14, 15);
     bool test = now.isAfter(cutoff);
     if (!test) {
       subjects.add({
@@ -142,7 +142,7 @@ class Business {
     await DatabaseHelper.removeAllSubjects();
     await DatabaseHelper.setSubjects(DatabaseHelper.tableNoten, subjects);
     await DatabaseHelper.setSubjects(DatabaseHelper.tableNotenOld, newGrades);
-    return Future.value(true);
+    return DatabaseHelper.getSubjects();
   }
 
   Future<dynamic> subjectRequest() async {
