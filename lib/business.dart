@@ -95,7 +95,7 @@ class Business {
 
     //simuliere Notenbenachrichtigung.!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     var now = DateTime.now();
-    var cutoff = DateTime(now.year, now.month, now.day, 14, 15);
+    var cutoff = DateTime(now.year, now.month, now.day, 17, 20);
     bool test = now.isAfter(cutoff);
     if (!test) {
       subjects.add({
