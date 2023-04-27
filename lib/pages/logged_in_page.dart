@@ -27,16 +27,21 @@ class _LoggedInPageState extends State<LoggedInPage>
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   late Future<dynamic> subjects;
   late Business business;
+  late bool refreshindicatorActive;
 
   Color myColor = const Color.fromRGBO(226, 0, 26, 1.0);
 
-  Future<void> swiperefresh() {
+  Future<void> swiperefresh() async {
     setState(() {
+      refreshindicatorActive = true;
       subjects = business.subjects(false);
     });
-    //damit ladekreis von refreshindicator direkt verschwindet
-    //es wird ja der ladekreis von subjects angezeigt
-    return Future<void>.value();
+
+    //um einmal ladekreis anzuzeigen solange subjects lädt und wenn fertig muss refreshindicatorActive auf false gesetzt werden
+    await subjects;
+    setState(() {
+      refreshindicatorActive = false;
+    });
   }
 
   @override
@@ -44,6 +49,8 @@ class _LoggedInPageState extends State<LoggedInPage>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     business = Business(widget.username, widget.password);
+    refreshindicatorActive = false;
+    //kein setstate weil vor widget build
     subjects = business.subjects(false);
   }
 
@@ -59,12 +66,14 @@ class _LoggedInPageState extends State<LoggedInPage>
     //wird immer aufgerufen wenn app in den vordergrund kommt
     if (state == AppLifecycleState.resumed) {
       Workmanager().cancelByUniqueName("meintask");
-      subjects = DatabaseHelper.getSubjects();
+      setState(() {
+        subjects = DatabaseHelper.getSubjects();
+      });
     } else {
       //daten periodisch von hs bochum holen
       Workmanager().registerPeriodicTask('meintask', 'meintask',
-          frequency: const Duration(minutes: 15),
-          initialDelay: const Duration(minutes: 15),
+          frequency: const Duration(minutes: 60),
+          initialDelay: const Duration(minutes: 60),
           existingWorkPolicy: ExistingWorkPolicy.keep);
     }
   }
@@ -167,17 +176,30 @@ class _LoggedInPageState extends State<LoggedInPage>
                     child: FutureBuilder<dynamic>(
                       future: subjects,
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
+                        if (refreshindicatorActive) {
+                          return const Center(child: Text(""));
+                        } else if (snapshot.connectionState ==
                             ConnectionState.waiting) {
                           return const Center(
                               child: CircularProgressIndicator());
                         } else if (snapshot.hasError) {
-                          return Center(
-                              child: Text(
-                                  'Fehler beim Laden der Daten: ${snapshot.error}'));
+                          //listview damit swipe to refresh erhalten bleibt
+                          return Stack(
+                            children: [
+                              ListView(),
+                              Center(
+                                  child: Text(
+                                      'Fehler beim Laden der Daten: ${snapshot.error}'))
+                            ],
+                          );
                         } else if (snapshot.data.isEmpty) {
-                          return const Center(
-                              child: Text("Keine Noten gefunden."));
+                          //listview damit swipe to refresh erhalten bleibt
+                          return Stack(
+                            children: [
+                              ListView(),
+                              const Center(child: Text("Keine Daten vorhanden"))
+                            ],
+                          );
                         } else {
                           final subjects = snapshot.data;
                           return AnimatedList(
