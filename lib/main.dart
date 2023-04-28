@@ -30,7 +30,7 @@ void main() async {
   requestBatteryOptimizations();
 
   //initialisiere den background muss vor runApp erfolgen
-  await Workmanager().initialize(backgroundTask);
+  await Workmanager().initialize(callbackDispatcher);
 
   runApp(MyApp(isLoggedIn: isLoggedIn, username: username, password: password));
 }
@@ -99,7 +99,8 @@ void requestBatteryOptimizations() async {
   }
 }
 
-void backgroundTask() {
+@pragma('vm:entry-point')
+void callbackDispatcher() {
   Workmanager().executeTask((taskName, inputData) async {
     const storage = FlutterSecureStorage();
     String? value = await storage.read(key: 'isLoggedIn');
