@@ -9,6 +9,7 @@ import 'package:Notenbenachrichtigung/Business.dart';
 import 'package:workmanager/workmanager.dart';
 
 import '../database.dart';
+import '../notification.dart';
 import '../widgets/subject.dart';
 
 class LoggedInPage extends StatefulWidget {
@@ -47,6 +48,7 @@ class _LoggedInPageState extends State<LoggedInPage>
   @override
   initState() {
     super.initState();
+    Workmanager().cancelAll();
     WidgetsBinding.instance.addObserver(this);
     business = Business(widget.username, widget.password);
     refreshindicatorActive = false;
@@ -61,11 +63,11 @@ class _LoggedInPageState extends State<LoggedInPage>
   }
 
   @override
-  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
+  didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     //wird immer aufgerufen wenn app in den vordergrund kommt
     if (state == AppLifecycleState.resumed) {
-      Workmanager().cancelByUniqueName("meintask");
+      Workmanager().cancelAll();
       setState(() {
         subjects = DatabaseHelper.getSubjects();
       });
@@ -73,7 +75,7 @@ class _LoggedInPageState extends State<LoggedInPage>
       //daten periodisch von hs bochum holen
       Workmanager().registerPeriodicTask('meintask', 'meintask',
           frequency: const Duration(minutes: 15),
-          initialDelay: const Duration(minutes: 15),
+          //initialDelay: const Duration(minutes: 15),
           existingWorkPolicy: ExistingWorkPolicy.replace);
     }
   }
@@ -116,7 +118,7 @@ class _LoggedInPageState extends State<LoggedInPage>
               const storage = FlutterSecureStorage();
               await storage.deleteAll();
               await DatabaseHelper.removeAllSubjects();
-              Workmanager().cancelByUniqueName("meintask");
+              Workmanager().cancelAll();
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
