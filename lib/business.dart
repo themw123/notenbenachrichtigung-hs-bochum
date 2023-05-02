@@ -92,7 +92,7 @@ class Business {
       }
       counter++;
     }
-
+    /*
     //simuliere Notenbenachrichtigung.!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     var now = DateTime.now();
     var cutoff = DateTime(now.year, now.month, now.day, 14, 35);
@@ -109,7 +109,7 @@ class Business {
     }
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     //subjects.removeRange(0, subjects.length);
-
+*/
     List<Map<String, dynamic>> subjectsOld = await DatabaseHelper.getSubjects();
     var newGrades = compare(subjects, subjectsOld);
 
