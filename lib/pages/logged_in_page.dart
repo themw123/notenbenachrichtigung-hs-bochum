@@ -74,8 +74,8 @@ class _LoggedInPageState extends State<LoggedInPage>
     } else {
       //daten periodisch von hs bochum holen
       Workmanager().registerPeriodicTask('meintask', 'meintask',
-          frequency: const Duration(minutes: 15),
-          //initialDelay: const Duration(minutes: 15),
+          frequency: const Duration(minutes: 60),
+          initialDelay: const Duration(minutes: 70),
           existingWorkPolicy: ExistingWorkPolicy.replace);
     }
   }
