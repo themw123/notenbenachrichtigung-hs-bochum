@@ -92,7 +92,7 @@ class Business {
       }
       counter++;
     }
-    /*
+/*
     //simuliere Notenbenachrichtigung.!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     var now = DateTime.now();
     var cutoff = DateTime(now.year, now.month, now.day, 14, 35);
