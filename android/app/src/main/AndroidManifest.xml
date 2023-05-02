@@ -12,7 +12,7 @@
         android:label="Notenbenachrichtigung"
         android:name="${applicationName}"
         android:roundIcon="@mipmap/ic_launcher"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/launcher_icon"
     >
 
         <activity
