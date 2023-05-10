@@ -32,6 +32,9 @@ class _LoggedInPageState extends State<LoggedInPage>
 
   Color myColor = const Color.fromRGBO(226, 0, 26, 1.0);
 
+  //für demo
+  Timer? _timer;
+
   Future<void> swiperefresh() async {
     setState(() {
       refreshindicatorActive = true;
@@ -54,11 +57,20 @@ class _LoggedInPageState extends State<LoggedInPage>
     refreshindicatorActive = false;
     //kein setstate weil vor widget build
     subjects = business.subjects(false);
+
+    //für demo
+    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      setState(() {
+        subjects = business.subjects(false);
+      });
+    });
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    //für demo
+    _timer?.cancel();
     super.dispose();
   }
 

@@ -52,6 +52,7 @@ class Business {
       return Future.value(false);
     }
 
+/*
     //!!!!!!!!!!hier subjects von hs bochum holen!!!!!!!!!!!!!!!!!!
     dynamic html = await subjectRequest();
     if (html == false) {
@@ -60,12 +61,12 @@ class Business {
       return Future.value(false);
     }
     //!!!!!!!!!!hier subjects von hs bochum holen!!!!!!!!!!!!!!!!!!
+*/
 
-/*
     //simulieren
     dynamic html =
         '***REMOVED***';
-*/
+
     var document = parse(html);
     var tables = document.getElementsByTagName('table');
     var secondTable = tables[1];
@@ -197,11 +198,10 @@ class Business {
   }
 
   Future<bool> login() async {
-    /*
     await Future.delayed(const Duration(seconds: 3));
     return Future.value(true);
-    */
 
+/*
     // Startseite
     String url =
         "https://studonline.hs-bochum.de/qisserver/rds?state=user&type=0";
@@ -249,5 +249,6 @@ class Business {
     }
 
     return Future.value(true);
+    */
   }
 }
