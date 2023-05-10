@@ -59,9 +59,9 @@ class _LoggedInPageState extends State<LoggedInPage>
     subjects = business.subjects(false);
 
     //für demo
-    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 60), (timer) {
       setState(() {
-        subjects = business.subjects(false);
+        subjects = business.subjects(true);
       });
     });
   }
