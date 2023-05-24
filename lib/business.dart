@@ -134,8 +134,7 @@ class Business {
         NotificationManager.showNotification(
             "Neue $text erhalten!", newGradesText);
       } else {
-        NotificationManager.showNotification(
-            "Fetch erfolgreich!", "aber keine neuen Noten.");
+        //NotificationManager.showNotification("Fetch erfolgreich!", "aber keine neuen Noten.");
       }
     }
 
