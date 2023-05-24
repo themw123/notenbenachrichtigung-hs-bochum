@@ -1,16 +1,15 @@
-# notenbenachrichtigung
+# notenbenachrichtigung-hs-bochum
 
-A new Flutter project.
+Die Notenbenachrichtigungs App überprüft einmal in der Stunde für dich, ob du eine neue Note von der Hochschule Bochum erhalten hast.
+Dabei ist es egal, ob die App aktiv läuft oder komplett geschlossen wird. Selbst bei einem Neustart des Smartphones wird der Prozess der Hintergrundüberprüfung wieder aufgenommen.
 
-## Getting Started
+Die App läuft trotz Flutter ausschließlich auf Android Geräten, da Hintergrundaktivitäten nicht so einfach möglich sind bei ios Geräten. 
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+![Alt text](/assets/vorschau.png)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+
+![Alt text](/assets/logik.png)
+
