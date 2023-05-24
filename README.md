@@ -9,5 +9,7 @@ Die App läuft trotz Flutter ausschließlich auf Android Geräten, da Hintergrun
 ![Alt text](/assets/vorschau.png)
 
 
+
+
 ![Alt text](/assets/logik.png)
 
