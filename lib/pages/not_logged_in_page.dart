@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../Business.dart';
 import 'logged_in_page.dart';
@@ -59,6 +60,13 @@ class _LoginPageState extends State<LoginPage> {
       loading = false;
       button = true;
     });
+  }
+
+  Future<void> _launchUrl(url) async {
+    Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
+    }
   }
 
   @override
@@ -146,6 +154,19 @@ class _LoginPageState extends State<LoginPage> {
                                   Colors.transparent),
                               splashFactory: NoSplash.splashFactory,
                             ),
+                    ),
+                    const SizedBox(height: 20),
+                    GestureDetector(
+                      onTap: () {
+                        _launchUrl('https://github.com/themw123');
+                      },
+                      child: Text(
+                        'mein GitHub',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
                     ),
                   ],
                 ),
