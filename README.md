@@ -6,5 +6,5 @@ Dabei ist es egal, ob die App aktiv läuft oder komplett geschlossen wird. Selbs
 Die App läuft trotz Flutter ausschließlich auf Android Geräten, da Hintergrundaktivitäten nicht so einfach möglich sind bei ios Geräten. 
 
 App:
-![Alt text](/img/vorschau.png)
+![Alt text](/assets/vorschau.png)
 
