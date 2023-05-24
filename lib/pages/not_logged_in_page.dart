@@ -158,7 +158,8 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 20),
                     GestureDetector(
                       onTap: () {
-                        _launchUrl('https://github.com/themw123');
+                        _launchUrl(
+                            'https://github.com/themw123/notenbenachrichtigung-hs-bochum');
                       },
                       child: Text(
                         'mein GitHub',
