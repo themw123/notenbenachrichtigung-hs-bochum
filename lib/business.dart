@@ -61,11 +61,6 @@ class Business {
     }
     //!!!!!!!!!!hier subjects von hs bochum holen!!!!!!!!!!!!!!!!!!
 
-/*
-    //simulieren
-    dynamic html =
-        '***REMOVED***';
-*/
     var document = parse(html);
     var tables = document.getElementsByTagName('table');
     var secondTable = tables[1];

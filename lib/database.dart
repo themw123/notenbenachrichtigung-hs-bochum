@@ -95,29 +95,6 @@ class DatabaseHelper {
     for (Map<String, dynamic> subject in subjects) {
       await db!.insert(table, subject);
     }
-
-    /*
-    Map<String, dynamic> row1 = {
-      DatabaseHelper.columnSubject: 'testFach1',
-      DatabaseHelper.columnPruefer: '***REMOVED***',
-      DatabaseHelper.columnDatum: '19.10.23',
-      DatabaseHelper.columnRaum: 'H9',
-      DatabaseHelper.columnUhrzeit: '13:00',
-      DatabaseHelper.columnOld: 0
-    };
-
-    Map<String, dynamic> row2 = {
-      DatabaseHelper.columnSubject: 'Digitalisierung im industrielen Umfeld',
-      DatabaseHelper.columnPruefer: '***REMOVED***',
-      DatabaseHelper.columnDatum: '19.08.23',
-      DatabaseHelper.columnRaum: 'H7',
-      DatabaseHelper.columnUhrzeit: '10:00',
-      DatabaseHelper.columnOld: 1
-    };
-
-    await db!.insert(tableNoten, row1);
-    await db.insert(tableNotenOld, row2);
-    */
   }
 
   static Future<void> removeAllSubjects() async {
