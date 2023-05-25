@@ -64,7 +64,7 @@ class Business {
 /*
     //simulieren
     dynamic html =
-        '***REMOVED***';
+        'xxx';
 */
     var document = parse(html);
     var tables = document.getElementsByTagName('table');

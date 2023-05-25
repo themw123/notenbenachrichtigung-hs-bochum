@@ -99,7 +99,7 @@ class DatabaseHelper {
     /*
     Map<String, dynamic> row1 = {
       DatabaseHelper.columnSubject: 'testFach1',
-      DatabaseHelper.columnPruefer: '***REMOVED***',
+      DatabaseHelper.columnPruefer: 'xxx',
       DatabaseHelper.columnDatum: '19.10.23',
       DatabaseHelper.columnRaum: 'H9',
       DatabaseHelper.columnUhrzeit: '13:00',
@@ -108,7 +108,7 @@ class DatabaseHelper {
 
     Map<String, dynamic> row2 = {
       DatabaseHelper.columnSubject: 'Digitalisierung im industrielen Umfeld',
-      DatabaseHelper.columnPruefer: '***REMOVED***',
+      DatabaseHelper.columnPruefer: 'xxx',
       DatabaseHelper.columnDatum: '19.08.23',
       DatabaseHelper.columnRaum: 'H7',
       DatabaseHelper.columnUhrzeit: '10:00',
