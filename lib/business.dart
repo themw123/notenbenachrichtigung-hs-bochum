@@ -47,16 +47,16 @@ class Business {
 
     NotificationManager.init();
     if (!success) {
-      NotificationManager.showNotification("Login fehlgeschlagen",
-          "Die Noten konnten nicht aktualisiert werden.");
+      NotificationManager.showNotification(
+          "Login fehlgeschlagen", "Es konnte sich nicht eingeloggt werden.");
       return Future.value(false);
     }
 
     //!!!!!!!!!!hier subjects von hs bochum holen!!!!!!!!!!!!!!!!!!
     dynamic html = await subjectRequest();
     if (html == false) {
-      NotificationManager.showNotification("Login fehlgeschlagen",
-          "Die Noten konnten nicht aktualisiert werden. Zweiter Asi konnte nicht ermittelt werden.");
+      NotificationManager.showNotification("Noten holen fehlgeschlagen",
+          "Die Noten konnten nicht geholt werden.");
       return Future.value(false);
     }
     //!!!!!!!!!!hier subjects von hs bochum holen!!!!!!!!!!!!!!!!!!
@@ -164,9 +164,22 @@ class Business {
       return Future.value(false);
     }
 
+    //abschluss zahl holen
+    var zahl;
+    var element = soup.find('a', string: 'Abschluss');
+    var zahltext = element?.getText();
+    RegExp regExp = RegExp(r'\d+');
+    Match? match = regExp.firstMatch(zahltext!);
+    zahl = match?.group(0);
+    if (zahl == null || zahl == '') {
+      return Future.value(false);
+    }
+
     // noten holen
     url =
-        'https://std-info.hs-bochum.de/qisserver/rds?state=examsinfosStudent&next=list.vm&nextdir=qispos/examsinfo/student&createInfos=Y&struct=auswahlBaum&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D84%2Cstgnr%3D1&expand=1&asi=$asi';
+        'https://std-info.hs-bochum.de/qisserver/rds?state=examsinfosStudent&next=list.vm&nextdir=qispos/examsinfo/student&createInfos=Y&struct=auswahlBaum&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D' +
+            zahl +
+            '%2Cstgnr%3D1&expand=1&asi=$asi';
     response = await dio.get(url);
 
     return response.data;
