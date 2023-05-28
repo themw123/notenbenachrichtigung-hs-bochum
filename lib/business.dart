@@ -47,25 +47,20 @@ class Business {
 
     NotificationManager.init();
     if (!success) {
-      NotificationManager.showNotification("Login fehlgeschlagen",
-          "Die Noten konnten nicht aktualisiert werden.");
+      NotificationManager.showNotification(
+          "Login fehlgeschlagen", "Es konnte sich nicht eingeloggt werden.");
       return Future.value(false);
     }
 
     //!!!!!!!!!!hier subjects von hs bochum holen!!!!!!!!!!!!!!!!!!
     dynamic html = await subjectRequest();
     if (html == false) {
-      NotificationManager.showNotification("Login fehlgeschlagen",
-          "Die Noten konnten nicht aktualisiert werden. Zweiter Asi konnte nicht ermittelt werden.");
+      NotificationManager.showNotification("Noten holen fehlgeschlagen",
+          "Die Noten konnten nicht geholt werden.");
       return Future.value(false);
     }
     //!!!!!!!!!!hier subjects von hs bochum holen!!!!!!!!!!!!!!!!!!
 
-/*
-    //simulieren
-    dynamic html =
-        'xxx';
-*/
     var document = parse(html);
     var tables = document.getElementsByTagName('table');
     var secondTable = tables[1];
@@ -95,21 +90,22 @@ class Business {
 /*
     //simuliere Notenbenachrichtigung.!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     var now = DateTime.now();
-    var cutoff = DateTime(now.year, now.month, now.day, 19, 33);
+    var cutoff = DateTime(now.year, now.month, now.day, 14, 35);
     bool test = now.isAfter(cutoff);
     if (!test) {
       subjects.add({
-        DatabaseHelper.columnSubject: "xxx",
-        DatabaseHelper.columnPruefer: "xxx",
-        DatabaseHelper.columnDatum: "10.06.23",
-        DatabaseHelper.columnRaum: "aw4-01",
-        DatabaseHelper.columnUhrzeit: "11:00",
+        DatabaseHelper.columnSubject: "xx",
+        DatabaseHelper.columnPruefer: "yy",
+        DatabaseHelper.columnDatum: "yx",
+        DatabaseHelper.columnRaum: "xxx",
+        DatabaseHelper.columnUhrzeit: "x",
         DatabaseHelper.columnOld: 0,
       });
     }
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     //subjects.removeRange(0, subjects.length);
 */
+
     List<Map<String, dynamic>> subjectsOld = await DatabaseHelper.getSubjects();
     var newGrades = compare(subjects, subjectsOld);
 
@@ -133,8 +129,7 @@ class Business {
         NotificationManager.showNotification(
             "Neue $text erhalten!", newGradesText);
       } else {
-        NotificationManager.showNotification(
-            "Fetch erfolgreich!", "aber keine neuen Noten.");
+        //NotificationManager.showNotification("Fetch erfolgreich!", "aber keine neuen Noten.");
       }
     }
 
@@ -169,9 +164,22 @@ class Business {
       return Future.value(false);
     }
 
+    //abschluss zahl holen
+    var zahl;
+    var element = soup.find('a', string: 'Abschluss');
+    var zahltext = element?.getText();
+    RegExp regExp = RegExp(r'\d+');
+    Match? match = regExp.firstMatch(zahltext!);
+    zahl = match?.group(0);
+    if (zahl == null || zahl == '') {
+      return Future.value(false);
+    }
+
     // noten holen
     url =
-        'https://std-info.hs-bochum.de/qisserver/rds?state=examsinfosStudent&next=list.vm&nextdir=qispos/examsinfo/student&createInfos=Y&struct=auswahlBaum&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D84%2Cstgnr%3D1&expand=1&asi=$asi';
+        'https://std-info.hs-bochum.de/qisserver/rds?state=examsinfosStudent&next=list.vm&nextdir=qispos/examsinfo/student&createInfos=Y&struct=auswahlBaum&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D' +
+            zahl +
+            '%2Cstgnr%3D1&expand=1&asi=$asi';
     response = await dio.get(url);
 
     return response.data;
@@ -197,10 +205,10 @@ class Business {
   }
 
   Future<bool> login() async {
-/*    
+    /*
     await Future.delayed(const Duration(seconds: 3));
     return Future.value(true);
-*/
+    */
 
     // Startseite
     String url =
