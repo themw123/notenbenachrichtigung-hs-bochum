@@ -14,6 +14,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   const storage = FlutterSecureStorage();
+
   String? value = await storage.read(key: 'isLoggedIn');
   bool isLoggedIn = value?.toLowerCase() == 'true';
 
